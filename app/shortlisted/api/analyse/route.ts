@@ -3,6 +3,9 @@ import { redis, SESSION_TTL } from "@/lib/shortlisted/redis";
 import { runFreeAnalysis } from "@/lib/shortlisted/claude";
 import { randomUUID } from "crypto";
 
+// Claude API can spike past the default 10s/15s timeout
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
