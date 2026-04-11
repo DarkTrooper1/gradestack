@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { redis, SESSION_TTL } from "@/lib/shortlisted/redis";
 import { runFreeAnalysis } from "@/lib/shortlisted/claude";
 import { randomUUID } from "crypto";
+import type { FreeAnalysis } from "@/lib/shortlisted/types";
 
 // Claude API can spike past the default 10s/15s timeout
 export const maxDuration = 60;
@@ -38,14 +39,15 @@ export async function POST(req: NextRequest) {
 
     const sessionId = randomUUID();
 
+    // Store meta as a plain object - Upstash Redis serialises internally
     await redis.set(
       `session:${sessionId}:meta`,
-      JSON.stringify({ statement, email }),
+      { statement, email },
       { ex: SESSION_TTL }
     );
 
     const rawJson = await runFreeAnalysis(statement);
-    let analysis;
+    let analysis: FreeAnalysis;
     try {
       analysis = JSON.parse(rawJson);
     } catch {
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
       analysis = JSON.parse(match[0]);
     }
 
-    await redis.set(`session:${sessionId}:free`, JSON.stringify(analysis), {
+    await redis.set(`session:${sessionId}:free`, analysis, {
       ex: SESSION_TTL,
     });
 

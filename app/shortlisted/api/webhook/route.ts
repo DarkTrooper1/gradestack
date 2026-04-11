@@ -51,14 +51,15 @@ export async function POST(req: NextRequest) {
     // heavy Claude work after the response has been sent via after().
     after(async () => {
       try {
-        const metaRaw = await redis.get<string>(`session:${sessionId}:meta`);
-        if (!metaRaw) {
+        // Retrieve the meta object stored by /api/analyse
+        const meta = await redis.get<{ statement: string; email: string }>(
+          `session:${sessionId}:meta`
+        );
+        if (!meta) {
           console.error(`Session meta not found for ${sessionId}`);
           return;
         }
 
-        const meta =
-          typeof metaRaw === "string" ? JSON.parse(metaRaw) : metaRaw;
         const statement: string = meta.statement;
 
         const rawJson = await runPaidAnalysis(statement);
@@ -72,11 +73,10 @@ export async function POST(req: NextRequest) {
           analysis = JSON.parse(match[0]);
         }
 
-        await redis.set(
-          `session:${sessionId}:paid`,
-          JSON.stringify(analysis),
-          { ex: SESSION_TTL }
-        );
+        // Store paid result as a plain object - Upstash Redis serialises internally
+        await redis.set(`session:${sessionId}:paid`, analysis, {
+          ex: SESSION_TTL,
+        });
 
         if (email) {
           try {

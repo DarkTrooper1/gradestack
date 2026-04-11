@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/shortlisted/redis";
+import type { FreeAnalysis, PaidAnalysis } from "@/lib/shortlisted/types";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -10,22 +11,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [freeRaw, paidRaw] = await Promise.all([
-      redis.get<string>(`session:${id}:free`),
-      redis.get<string>(`session:${id}:paid`),
+    const [free, paid] = await Promise.all([
+      redis.get<FreeAnalysis>(`session:${id}:free`),
+      redis.get<PaidAnalysis>(`session:${id}:paid`),
     ]);
-
-    const free = freeRaw
-      ? typeof freeRaw === "string"
-        ? JSON.parse(freeRaw)
-        : freeRaw
-      : null;
-
-    const paid = paidRaw
-      ? typeof paidRaw === "string"
-        ? JSON.parse(paidRaw)
-        : paidRaw
-      : null;
 
     if (!free && !paid) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
