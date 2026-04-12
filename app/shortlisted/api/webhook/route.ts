@@ -39,14 +39,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    // Only write the payment confirmation flag — no Claude calls here.
-    // The browser will call /shortlisted/api/run-analysis after redirect,
-    // which checks this flag before running the paid Claude analysis.
+    // Write the payment confirmation flag. The results route uses this to
+    // unlock the paid analysis that was pre-computed during /api/analyse.
     await redis.set(`session:${sessionId}:paid_confirmed`, true, {
       ex: SESSION_TTL,
     });
 
-    console.log(`Payment confirmed for session ${sessionId}`);
+    console.log(`Payment confirmed, unlocking analysis for session ${sessionId}`);
   }
 
   return NextResponse.json({ received: true });
