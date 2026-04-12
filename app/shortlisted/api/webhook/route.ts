@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { after } from "next/server";
 import Stripe from "stripe";
 import { redis, SESSION_TTL } from "@/lib/shortlisted/redis";
-import { runPaidAnalysis } from "@/lib/shortlisted/claude";
-import { sendResultsEmail } from "@/lib/shortlisted/email";
-import type { PaidAnalysis } from "@/lib/shortlisted/types";
-
-// Claude paid analysis + email can take 20-40s - extend the function timeout
-export const maxDuration = 60;
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -40,55 +33,20 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const sessionId = session.metadata?.sessionId;
-    const email = session.metadata?.email ?? session.customer_email ?? "";
 
     if (!sessionId) {
       console.error("No sessionId in Stripe metadata");
       return NextResponse.json({ received: true });
     }
 
-    // Respond to Stripe immediately (within its 30s window), then run the
-    // heavy Claude work after the response has been sent via after().
-    after(async () => {
-      try {
-        // Retrieve the meta object stored by /api/analyse
-        const meta = await redis.get<{ statement: string; email: string }>(
-          `session:${sessionId}:meta`
-        );
-        if (!meta) {
-          console.error(`Session meta not found for ${sessionId}`);
-          return;
-        }
-
-        const statement: string = meta.statement;
-
-        const rawJson = await runPaidAnalysis(statement);
-        let analysis: PaidAnalysis;
-        try {
-          analysis = JSON.parse(rawJson);
-        } catch {
-          const match = rawJson.match(/\{[\s\S]*\}/);
-          if (!match)
-            throw new Error("Failed to parse paid Claude response as JSON");
-          analysis = JSON.parse(match[0]);
-        }
-
-        // Store paid result as a plain object - Upstash Redis serialises internally
-        await redis.set(`session:${sessionId}:paid`, analysis, {
-          ex: SESSION_TTL,
-        });
-
-        if (email) {
-          try {
-            await sendResultsEmail(email, sessionId, analysis);
-          } catch (emailErr) {
-            console.error("Failed to send results email:", emailErr);
-          }
-        }
-      } catch (err) {
-        console.error("Error processing paid analysis:", err);
-      }
+    // Only write the payment confirmation flag — no Claude calls here.
+    // The browser will call /shortlisted/api/run-analysis after redirect,
+    // which checks this flag before running the paid Claude analysis.
+    await redis.set(`session:${sessionId}:paid_confirmed`, true, {
+      ex: SESSION_TTL,
     });
+
+    console.log(`Payment confirmed for session ${sessionId}`);
   }
 
   return NextResponse.json({ received: true });

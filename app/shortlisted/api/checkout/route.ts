@@ -19,17 +19,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const metaRaw = await redis.get<string>(`session:${sessionId}:meta`);
-    if (!metaRaw) {
+    const meta = await redis.get<{ statement: string; email: string }>(
+      `session:${sessionId}:meta`
+    );
+    if (!meta) {
       return NextResponse.json(
         { error: "Session not found or expired" },
         { status: 404 }
       );
     }
 
-    const meta = typeof metaRaw === "string" ? JSON.parse(metaRaw) : metaRaw;
     const email: string = meta.email ?? "";
-
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: process.env.STRIPE_PRICE_ID!, quantity: 1 }],
       customer_email: email || undefined,
       metadata: { sessionId, email },
-      success_url: `${baseUrl}/shortlisted/results?id=${sessionId}&paid=true`,
+      success_url: `${baseUrl}/shortlisted/results?id=${sessionId}&payment=success`,
       cancel_url: `${baseUrl}/shortlisted/results?id=${sessionId}`,
     });
 
