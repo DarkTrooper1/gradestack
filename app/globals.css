@@ -138,3 +138,43 @@
     @apply font-sans;
   }
 }
+
+/* Shortlisted dark input styles */
+.sl-input {
+  display: block;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.sl-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+.sl-input:focus {
+  border-color: #e8b84b;
+  box-shadow: 0 0 0 2px rgba(232, 184, 75, 0.15);
+}
+
+/* Shortlisted link styles */
+.sl-footer-link {
+  color: rgba(255, 255, 255, 0.25);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.sl-footer-link:hover {
+  color: rgba(255, 255, 255, 0.55);
+}
+.sl-content-link {
+  color: #e8b84b;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.sl-content-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}

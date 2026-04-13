@@ -18,6 +18,22 @@ const CRITERIA_ORDER = [
 
 type CriteriaKey = (typeof CRITERIA_ORDER)[number]["key"];
 
+const S = "var(--font-instrument-serif)";
+const N = "var(--font-instrument-sans), system-ui, sans-serif";
+const CARD_STYLE = {
+  background: "rgba(255,255,255,0.07)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "12px",
+} as const;
+
+function CenteredFallback({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px", fontFamily: N }}>
+      {children}
+    </div>
+  );
+}
+
 function ResultsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -32,8 +48,6 @@ function ResultsContent() {
   const [polling, setPolling] = useState(false);
   const analysePaidFiredRef = useRef(false);
 
-  // Fire paid analysis on mount — keepalive so it survives any navigation.
-  // Ref prevents double-firing in React StrictMode.
   useEffect(() => {
     if (!sessionId || analysePaidFiredRef.current) return;
     analysePaidFiredRef.current = true;
@@ -42,7 +56,7 @@ function ResultsContent() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sessionId }),
       keepalive: true,
-    }).catch(() => {/* ignore — paid data may already exist or will be retried */});
+    }).catch(() => {});
   }, [sessionId]);
 
   const fetchResults = useCallback(async () => {
@@ -70,7 +84,6 @@ function ResultsContent() {
     }
   }, [sessionId]);
 
-  // Initial load
   useEffect(() => {
     if (!sessionId) {
       setError("No session ID provided.");
@@ -80,13 +93,9 @@ function ResultsContent() {
     fetchResults();
   }, [sessionId, fetchResults]);
 
-  // After Stripe redirects back with ?payment=success, poll until the webhook
-  // has written paid_confirmed and the results route returns unlocked paid data.
   useEffect(() => {
     if (!paymentSuccess || paid) return;
-
     setPolling(true);
-
     const interval = setInterval(async () => {
       if (!sessionId) return;
       try {
@@ -103,13 +112,10 @@ function ResultsContent() {
         // keep polling silently
       }
     }, 2000);
-
-    // Stop polling after 3 minutes
     const timeout = setTimeout(() => {
       clearInterval(interval);
       setPolling(false);
     }, 180000);
-
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);
@@ -129,57 +135,52 @@ function ResultsContent() {
       if (!res.ok) throw new Error(data.error ?? "Checkout failed");
       if (data.url) window.location.href = data.url;
     } catch (err) {
-      alert(
-        err instanceof Error ? err.message : "Checkout failed. Please try again."
-      );
+      alert(err instanceof Error ? err.message : "Checkout failed. Please try again.");
       setCheckoutLoading(false);
     }
   }
 
   if (!sessionId) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="text-center">
-          <p className="text-gray-500 mb-4">No session found.</p>
-          <a href="/shortlisted" className="text-[#C24E2A] underline text-sm">
-            Start a new analysis
-          </a>
+      <CenteredFallback>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.45)", marginBottom: "16px" }}>No session found.</p>
+          <a href="/shortlisted" style={{ color: "#e8b84b", fontSize: "14px" }}>Start a new analysis</a>
         </div>
-      </div>
+      </CenteredFallback>
     );
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-10 w-10 rounded-full border-4 border-orange-100 border-t-[#C24E2A] animate-spin" />
-          <p className="text-gray-500 text-sm">Analysing your statement...</p>
+      <CenteredFallback>
+        <div style={{ textAlign: "center" }}>
+          <div
+            className="animate-spin"
+            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "4px solid rgba(232,184,75,0.2)", borderTopColor: "#e8b84b", margin: "0 auto 16px" }}
+          />
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "14px" }}>Analysing your statement...</p>
         </div>
-      </div>
+      </CenteredFallback>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="text-center max-w-sm">
-          <p className="text-red-600 mb-4">{error}</p>
-          <a href="/shortlisted" className="text-[#C24E2A] underline text-sm">
-            Start a new analysis
-          </a>
+      <CenteredFallback>
+        <div style={{ textAlign: "center", maxWidth: "360px" }}>
+          <p style={{ color: "#fca5a5", marginBottom: "16px" }}>{error}</p>
+          <a href="/shortlisted" style={{ color: "#e8b84b", fontSize: "14px" }}>Start a new analysis</a>
         </div>
-      </div>
+      </CenteredFallback>
     );
   }
 
   if (!free) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="text-center">
-          <p className="text-gray-500">No results found.</p>
-        </div>
-      </div>
+      <CenteredFallback>
+        <p style={{ color: "rgba(255,255,255,0.45)" }}>No results found.</p>
+      </CenteredFallback>
     );
   }
 
@@ -187,57 +188,60 @@ function ResultsContent() {
   const isPaid = !!paid;
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-6 py-5">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <a
-            href="/shortlisted"
-            className="text-xl font-bold tracking-tight"
-            style={{ fontFamily: "Georgia, serif", color: "inherit", textDecoration: "none" }}
-          >
+    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: N }}>
+
+      {/* Nav */}
+      <header style={{
+        position: "sticky", top: 0, zIndex: 50,
+        background: "rgba(13,31,60,0.8)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        padding: "16px 24px",
+      }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <a href="/shortlisted" style={{ fontFamily: S, fontSize: "20px", color: "#ffffff", textDecoration: "none" }}>
             Shortlisted
           </a>
-          <a
-            href="/shortlisted"
-            className="text-sm text-gray-500 hover:text-gray-700 transition"
-          >
+          <a href="/shortlisted" style={{ fontSize: "13px", color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
             New analysis
           </a>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-6 py-10 space-y-8">
+      <div style={{ maxWidth: "720px", margin: "0 auto", width: "100%", padding: "40px 24px", display: "flex", flexDirection: "column", gap: "24px" }}>
+
         {/* Overall score card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-          <div className="flex flex-col sm:flex-row items-center gap-8">
-            <ScoreRing score={analysis.overall_score} size={160} />
-            <div className="flex-1 text-center sm:text-left">
-              <h1
-                className="text-2xl font-bold text-gray-900 mb-2"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Your Results
-              </h1>
-              <p className="text-base font-semibold text-gray-800 mb-2">
-                {analysis.overall_verdict}
-              </p>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {analysis.overall_summary}
-              </p>
-            </div>
+        <div
+          className="flex flex-col sm:flex-row items-center gap-8"
+          style={{ ...CARD_STYLE, padding: "32px" }}
+        >
+          <ScoreRing score={analysis.overall_score} size={140} />
+          <div className="flex-1 text-center sm:text-left">
+            <h1 style={{ fontFamily: S, fontSize: "24px", color: "#ffffff", marginBottom: "8px" }}>
+              Your Results
+            </h1>
+            <p style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "8px" }}>
+              {analysis.overall_verdict}
+            </p>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.6)", lineHeight: 1.65 }}>
+              {analysis.overall_summary}
+            </p>
           </div>
         </div>
 
-        {/* Polling banner — shown while waiting for webhook to confirm payment */}
+        {/* Polling banner */}
         {polling && (
-          <div className="rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 flex items-center gap-3">
-            <div className="h-5 w-5 rounded-full border-2 border-orange-300 border-t-[#C24E2A] animate-spin flex-shrink-0" />
+          <div style={{ ...CARD_STYLE, padding: "20px 24px", display: "flex", alignItems: "center", gap: "16px" }}>
+            <div
+              className="animate-spin flex-shrink-0"
+              style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid rgba(232,184,75,0.25)", borderTopColor: "#e8b84b" }}
+            />
             <div>
-              <p className="text-sm font-semibold text-[#C24E2A]">
+              <p style={{ fontSize: "14px", fontWeight: 600, color: "#e8b84b", marginBottom: "2px" }}>
                 Unlocking your full analysis...
               </p>
-              <p className="text-xs text-orange-600 mt-0.5">
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>
                 Confirming payment. This usually takes a few seconds.
               </p>
             </div>
@@ -246,78 +250,50 @@ function ResultsContent() {
 
         {/* Criterion cards */}
         <section>
-          <h2
-            className="text-lg font-semibold text-gray-900 mb-4"
-            style={{ fontFamily: "Georgia, serif" }}
-          >
+          <h2 style={{ fontFamily: S, fontSize: "18px", color: "#ffffff", marginBottom: "16px" }}>
             Criterion Scores
           </h2>
-          <div className="space-y-4">
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {CRITERIA_ORDER.map(({ key, label }, index) => {
               const criterion = analysis.criteria[key as CriteriaKey];
               const isLocked = !isPaid && index > 0;
               return (
-                <CriterionCard
-                  key={key}
-                  label={label}
-                  criterion={criterion}
-                  locked={isLocked}
-                />
+                <CriterionCard key={key} label={label} criterion={criterion} locked={isLocked} />
               );
             })}
           </div>
         </section>
 
-        {/* Unlock CTA — hidden while polling */}
+        {/* Unlock CTA */}
         {!isPaid && !polling && (
-          <div className="rounded-2xl border-2 border-dashed border-orange-200 bg-white p-8 text-center">
-            <div className="mb-4">
-              <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-50">
-                <svg
-                  className="h-6 w-6 text-[#C24E2A]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 11V7a4 4 0 018 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h2
-                className="text-xl font-bold text-gray-900 mb-2"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Unlock your full analysis
-              </h2>
-              <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                Get detailed feedback on all 5 criteria, paragraph-by-paragraph
-                annotations, and targeted rewrite suggestions.
-              </p>
+          <div style={{ ...CARD_STYLE, padding: "36px 32px", textAlign: "center" }}>
+            <div style={{
+              width: "48px", height: "48px", borderRadius: "50%",
+              background: "rgba(232,184,75,0.1)", border: "1px solid rgba(232,184,75,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 20px",
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8b84b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
             </div>
-            <ul className="text-sm text-gray-700 space-y-2 mb-6 text-left max-w-xs mx-auto">
+            <h2 style={{ fontFamily: S, fontSize: "22px", color: "#ffffff", marginBottom: "8px" }}>
+              Unlock your full analysis
+            </h2>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.45)", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
+              Get detailed feedback on all 5 criteria, paragraph-by-paragraph annotations, and targeted rewrite suggestions.
+            </p>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 auto 28px", maxWidth: "300px", display: "flex", flexDirection: "column", gap: "10px", textAlign: "left" }}>
               {[
                 "All 5 criteria with scores, summaries & fixes",
                 "Paragraph-by-paragraph annotations",
                 "2-3 targeted rewrite suggestions",
                 "Full results emailed to you",
               ].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <svg
-                    className="h-4 w-4 text-[#C24E2A] mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M5 13l4 4L19 7"
-                    />
+                <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "14px", color: "rgba(255,255,255,0.7)" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e8b84b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "2px" }}>
+                    <path d="M5 13l4 4L19 7" />
                   </svg>
                   {item}
                 </li>
@@ -326,19 +302,30 @@ function ResultsContent() {
             <button
               onClick={handleUnlock}
               disabled={checkoutLoading}
-              className="w-full max-w-xs rounded-xl py-4 px-6 text-base font-semibold text-white transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ backgroundColor: "#C24E2A" }}
+              style={{
+                width: "100%", maxWidth: "280px",
+                background: "#e8b84b", color: "#0d1f3c",
+                border: "none", borderRadius: "8px",
+                padding: "16px 24px", fontSize: "15px", fontWeight: 600,
+                fontFamily: N, cursor: checkoutLoading ? "not-allowed" : "pointer",
+                opacity: checkoutLoading ? 0.6 : 1,
+                transition: "opacity 0.15s",
+                display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
+              }}
             >
               {checkoutLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <>
+                  <span
+                    className="animate-spin"
+                    style={{ width: "16px", height: "16px", border: "2px solid rgba(13,31,60,0.25)", borderTopColor: "#0d1f3c", borderRadius: "50%", flexShrink: 0 }}
+                  />
                   Redirecting to payment...
-                </span>
+                </>
               ) : (
-                "Unlock full analysis - £4.99"
+                "Unlock full analysis — £4.99"
               )}
             </button>
-            <p className="text-xs text-gray-400 mt-3">
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)", marginTop: "12px" }}>
               Secure payment via Stripe
             </p>
           </div>
@@ -347,10 +334,7 @@ function ResultsContent() {
         {/* Paragraph annotations */}
         {isPaid && paid.paragraph_annotations?.length > 0 && (
           <section>
-            <h2
-              className="text-lg font-semibold text-gray-900 mb-4"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
+            <h2 style={{ fontFamily: S, fontSize: "18px", color: "#ffffff", marginBottom: "16px" }}>
               Paragraph Breakdown
             </h2>
             <ParagraphAnnotations annotations={paid.paragraph_annotations} />
@@ -360,10 +344,7 @@ function ResultsContent() {
         {/* Rewrite suggestions */}
         {isPaid && paid.rewrite_suggestions?.length > 0 && (
           <section>
-            <h2
-              className="text-lg font-semibold text-gray-900 mb-4"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
+            <h2 style={{ fontFamily: S, fontSize: "18px", color: "#ffffff", marginBottom: "16px" }}>
               Rewrite Suggestions
             </h2>
             <RewriteSuggestions suggestions={paid.rewrite_suggestions} />
@@ -372,13 +353,14 @@ function ResultsContent() {
 
       </div>
 
-      <footer className="border-t border-gray-100 px-6 py-5 text-center text-xs text-gray-400">
-        <p>
-          <a href="/shortlisted/privacy" className="hover:text-gray-600 transition">Privacy Policy</a>
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "20px 24px", textAlign: "center", marginTop: "auto" }}>
+        <p style={{ fontSize: "12px" }}>
+          <a href="/shortlisted/privacy" className="sl-footer-link">Privacy Policy</a>
           {" · "}
-          <a href="/shortlisted/terms" className="hover:text-gray-600 transition">Terms &amp; Conditions</a>
+          <a href="/shortlisted/terms" className="sl-footer-link">Terms &amp; Conditions</a>
           {" · "}
-          &copy; 2026 Shortlisted
+          <span style={{ color: "rgba(255,255,255,0.25)" }}>&copy; 2026 Shortlisted</span>
         </p>
       </footer>
     </main>
@@ -389,8 +371,11 @@ export default function ShortlistedResultsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="h-10 w-10 rounded-full border-4 border-orange-100 border-t-[#C24E2A] animate-spin" />
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div
+            className="animate-spin"
+            style={{ width: "40px", height: "40px", borderRadius: "50%", border: "4px solid rgba(232,184,75,0.2)", borderTopColor: "#e8b84b" }}
+          />
         </div>
       }
     >

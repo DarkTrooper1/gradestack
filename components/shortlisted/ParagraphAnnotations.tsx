@@ -4,21 +4,29 @@ import type { ParagraphAnnotation } from "@/lib/shortlisted/types";
 
 const RATING_STYLES = {
   strong: {
-    badge: "bg-green-100 text-green-700",
-    border: "border-green-200",
-    dot: "bg-green-500",
+    dot: "#4ade80",
+    badgeBg: "rgba(74,222,128,0.12)",
+    badgeBorder: "rgba(74,222,128,0.25)",
+    badgeText: "#4ade80",
+    cardBorder: "rgba(74,222,128,0.15)",
   },
   adequate: {
-    badge: "bg-yellow-100 text-yellow-700",
-    border: "border-yellow-200",
-    dot: "bg-yellow-500",
+    dot: "#fbbf24",
+    badgeBg: "rgba(251,191,36,0.12)",
+    badgeBorder: "rgba(251,191,36,0.25)",
+    badgeText: "#fbbf24",
+    cardBorder: "rgba(251,191,36,0.15)",
   },
   weak: {
-    badge: "bg-red-100 text-red-700",
-    border: "border-red-200",
-    dot: "bg-red-500",
+    dot: "#f87171",
+    badgeBg: "rgba(248,113,113,0.12)",
+    badgeBorder: "rgba(248,113,113,0.25)",
+    badgeText: "#f87171",
+    cardBorder: "rgba(248,113,113,0.15)",
   },
 };
+
+const N = "var(--font-instrument-sans), system-ui, sans-serif";
 
 interface Props {
   annotations: ParagraphAnnotation[];
@@ -26,33 +34,39 @@ interface Props {
 
 export default function ParagraphAnnotations({ annotations }: Props) {
   return (
-    <div className="space-y-3">
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       {annotations.map((a, i) => {
         const styles = RATING_STYLES[a.rating];
         return (
           <div
             key={i}
-            className={`rounded-lg border p-4 ${styles.border} bg-white`}
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: `1px solid ${styles.cardBorder}`,
+              borderRadius: "10px",
+              padding: "16px",
+              fontFamily: N,
+            }}
           >
-            <div className="flex items-start gap-3">
-              <div
-                className={`mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full ${styles.dot}`}
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs text-gray-400">
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: styles.dot, flexShrink: 0, marginTop: "4px" }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>
                     Para {a.paragraph_index + 1}
                   </span>
-                  <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${styles.badge}`}
-                  >
+                  <span style={{
+                    fontSize: "11px", fontWeight: 600, padding: "2px 8px",
+                    borderRadius: "999px", textTransform: "capitalize" as const,
+                    background: styles.badgeBg, border: `1px solid ${styles.badgeBorder}`, color: styles.badgeText,
+                  }}>
                     {a.rating}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 italic mb-1.5 truncate">
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.35)", fontStyle: "italic", marginBottom: "6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   &ldquo;{a.paragraph_preview}&hellip;&rdquo;
                 </p>
-                <p className="text-sm text-gray-800">{a.comment}</p>
+                <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>{a.comment}</p>
               </div>
             </div>
           </div>

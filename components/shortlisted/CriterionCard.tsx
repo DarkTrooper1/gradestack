@@ -12,32 +12,30 @@ function isFull(c: CriterionFull | CriterionFree): c is CriterionFull {
   return "summary" in c && "top_fix" in c;
 }
 
-export default function CriterionCard({
-  label,
-  criterion,
-  locked,
-}: CriterionCardProps) {
+const S = "var(--font-instrument-serif)";
+const N = "var(--font-instrument-sans), system-ui, sans-serif";
+
+export default function CriterionCard({ label, criterion, locked }: CriterionCardProps) {
   const score = criterion.score;
   const barWidth = `${(score / 10) * 100}%`;
-  const scoreColour =
-    score >= 7 ? "#22c55e" : score >= 5 ? "#C24E2A" : "#ef4444";
 
   if (locked) {
     return (
-      <div className="rounded-xl border border-gray-100 bg-gray-50 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3
-            className="font-semibold text-gray-400"
-            style={{ fontFamily: "Georgia, serif" }}
-          >
+      <div style={{
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: "12px",
+        padding: "20px 24px",
+        fontFamily: N,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+          <h3 style={{ fontFamily: S, fontSize: "15px", color: "rgba(255,255,255,0.25)" }}>
             {label}
           </h3>
-          <div className="flex items-center gap-2 text-gray-300">
-            <LockIcon />
-          </div>
+          <LockIcon />
         </div>
-        <div className="h-2 bg-gray-200 rounded-full mb-4" />
-        <p className="text-sm text-gray-400 italic">
+        <div style={{ height: "4px", background: "rgba(255,255,255,0.06)", borderRadius: "9999px", marginBottom: "12px" }} />
+        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
           Unlock to see score &amp; feedback
         </p>
       </div>
@@ -45,38 +43,48 @@ export default function CriterionCard({
   }
 
   return (
-    <div className="rounded-xl border border-orange-100 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-3">
-        <h3
-          className="font-semibold text-gray-900"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
+    <div style={{
+      background: "rgba(255,255,255,0.07)",
+      border: "1px solid rgba(255,255,255,0.12)",
+      borderRadius: "12px",
+      padding: "20px 24px",
+      fontFamily: N,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+        <h3 style={{ fontFamily: S, fontSize: "15px", color: "#ffffff" }}>
           {label}
         </h3>
-        <span
-          className="text-xl font-bold"
-          style={{ color: scoreColour, fontFamily: "Georgia, serif" }}
-        >
+        <span style={{ fontFamily: S, fontSize: "20px", color: "#e8b84b" }}>
           {score}
-          <span className="text-sm font-normal text-gray-400">/10</span>
+          <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", fontFamily: N }}>/10</span>
         </span>
       </div>
-      <div className="h-2 bg-gray-100 rounded-full mb-4 overflow-hidden">
+      <div style={{ height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "9999px", marginBottom: "16px", overflow: "hidden" }}>
         <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: barWidth, backgroundColor: scoreColour }}
+          style={{
+            height: "100%",
+            width: barWidth,
+            background: "#e8b84b",
+            borderRadius: "9999px",
+            transition: "width 0.7s ease",
+          }}
         />
       </div>
       {isFull(criterion) && (
         <>
-          <p className="text-sm text-gray-700 leading-relaxed mb-3">
+          <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.65)", lineHeight: 1.65, marginBottom: "12px" }}>
             {criterion.summary}
           </p>
-          <div className="rounded-lg bg-orange-50 border border-orange-100 p-3">
-            <p className="text-xs font-semibold text-[#C24E2A] uppercase tracking-wide mb-1">
+          <div style={{
+            background: "rgba(232,184,75,0.08)",
+            border: "1px solid rgba(232,184,75,0.18)",
+            borderRadius: "8px",
+            padding: "12px 14px",
+          }}>
+            <p style={{ fontSize: "11px", fontWeight: 600, color: "#e8b84b", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
               Top fix
             </p>
-            <p className="text-sm text-gray-800">{criterion.top_fix}</p>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)" }}>{criterion.top_fix}</p>
           </div>
         </>
       )}
@@ -87,11 +95,11 @@ export default function CriterionCard({
 function LockIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="15"
+      height="15"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
+      stroke="rgba(255,255,255,0.2)"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

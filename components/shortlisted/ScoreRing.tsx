@@ -11,14 +11,14 @@ export default function ScoreRing({ score, size = 160 }: ScoreRingProps) {
   const offset = circumference - (score / 100) * circumference;
 
   const getColour = (s: number) => {
-    if (s >= 70) return "#22c55e";
-    if (s >= 50) return "#C24E2A";
-    return "#ef4444";
+    if (s >= 70) return "#4ade80";
+    if (s >= 50) return "#e8b84b";
+    return "#f87171";
   };
 
   return (
     <div
-      className="relative inline-flex items-center justify-center"
+      className="relative inline-flex items-center justify-center flex-shrink-0"
       style={{ width: size, height: size }}
     >
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
@@ -27,7 +27,7 @@ export default function ScoreRing({ score, size = 160 }: ScoreRingProps) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#f0e8e4"
+          stroke="rgba(255,255,255,0.1)"
           strokeWidth={10}
         />
         <circle
@@ -49,12 +49,12 @@ export default function ScoreRing({ score, size = 160 }: ScoreRingProps) {
           style={{
             fontSize: size * 0.28,
             color: getColour(score),
-            fontFamily: "Georgia, serif",
+            fontFamily: "var(--font-instrument-serif)",
           }}
         >
           {score}
         </span>
-        <span className="text-xs text-gray-400 mt-1">/ 100</span>
+        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.45)", marginTop: "4px" }}>/ 100</span>
       </div>
     </div>
   );

@@ -1,138 +1,153 @@
+const S = "var(--font-instrument-serif)";
+const N = "var(--font-instrument-sans), system-ui, sans-serif";
+
 export default function ShortlistedTermsPage() {
   return (
-    <main className="min-h-screen bg-white flex flex-col">
-      <header className="border-b border-gray-100 px-6 py-5">
-        <div className="max-w-3xl mx-auto flex items-baseline gap-3">
-          <a
-            href="/shortlisted"
-            className="text-2xl font-bold tracking-tight"
-            style={{ fontFamily: "Georgia, serif", color: "inherit", textDecoration: "none" }}
-          >
+    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: N }}>
+
+      {/* Nav */}
+      <header style={{
+        background: "rgba(13,31,60,0.8)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        padding: "16px 24px",
+      }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+          <a href="/shortlisted" style={{ fontFamily: S, fontSize: "20px", color: "#ffffff", textDecoration: "none" }}>
             Shortlisted
           </a>
         </div>
       </header>
 
-      <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-12">
-        <h1
-          className="text-3xl font-bold text-gray-900 mb-2"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Terms &amp; Conditions
-        </h1>
-        <p className="text-sm text-gray-400 mb-10">Last updated: April 2025</p>
+      {/* Content */}
+      <div style={{ flex: 1, maxWidth: "720px", margin: "0 auto", width: "100%", padding: "48px 24px" }}>
+        <div style={{
+          background: "rgba(255,255,255,0.07)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "12px",
+          padding: "40px",
+        }}>
+          <h1 style={{ fontFamily: S, fontSize: "32px", fontWeight: 400, color: "#ffffff", marginBottom: "4px" }}>
+            Terms &amp; Conditions
+          </h1>
+          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", marginBottom: "40px" }}>
+            Last updated: April 2025
+          </p>
 
-        <div className="prose prose-gray max-w-none space-y-8 text-sm text-gray-700 leading-relaxed">
+          <div style={{ display: "flex", flexDirection: "column", gap: "32px", fontSize: "14px", color: "rgba(255,255,255,0.6)", lineHeight: 1.75 }}>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">1. About this service</h2>
-            <p>
-              Shortlisted is an AI-powered UCAS personal statement review tool operated by GradeStack.
-              It provides automated, AI-generated feedback on personal statements submitted by users.
-              The service is not affiliated with UCAS or any UK university.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>1. About this service</h2>
+              <p>
+                Shortlisted is an AI-powered UCAS personal statement review tool operated by GradeStack.
+                It provides automated, AI-generated feedback on personal statements submitted by users.
+                The service is not affiliated with UCAS or any UK university.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">2. Pricing</h2>
-            <p>
-              A free summary of your first criterion is provided at no charge. Full analysis — covering
-              all five criteria, paragraph-by-paragraph annotations, and rewrite suggestions — is
-              available for a one-time payment of <strong>£4.99</strong> (including VAT where applicable).
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>2. Pricing</h2>
+              <p>
+                A free summary of your first criterion is provided at no charge. Full analysis — covering
+                all five criteria, paragraph-by-paragraph annotations, and rewrite suggestions — is
+                available for a one-time payment of <strong style={{ color: "rgba(255,255,255,0.85)" }}>£4.99</strong> (including VAT where applicable).
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">3. No refund policy</h2>
-            <p>
-              Because Shortlisted delivers digital content that is made available immediately upon
-              payment, you lose your statutory right to cancel under the Consumer Contracts Regulations
-              2013 once the analysis has been delivered to you. By completing payment you confirm you
-              consent to immediate delivery and acknowledge that the right of withdrawal does not apply.
-            </p>
-            <p className="mt-3">
-              This does not affect your rights under the Consumer Rights Act 2015 if the service is
-              faulty or not as described. If you believe your analysis was not delivered or was
-              materially defective, contact us at{" "}
-              <a href="mailto:results@gradestack.co.uk" className="text-[#C24E2A] underline">
-                results@gradestack.co.uk
-              </a>{" "}
-              within 7 days and we will investigate.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>3. No refund policy</h2>
+              <p>
+                Because Shortlisted delivers digital content that is made available immediately upon
+                payment, you lose your statutory right to cancel under the Consumer Contracts Regulations
+                2013 once the analysis has been delivered to you. By completing payment you confirm you
+                consent to immediate delivery and acknowledge that the right of withdrawal does not apply.
+              </p>
+              <p style={{ marginTop: "12px" }}>
+                This does not affect your rights under the Consumer Rights Act 2015 if the service is
+                faulty or not as described. If you believe your analysis was not delivered or was
+                materially defective, contact us at{" "}
+                <a href="mailto:results@gradestack.co.uk" className="sl-content-link">
+                  results@gradestack.co.uk
+                </a>{" "}
+                within 7 days and we will investigate.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">4. Data retention</h2>
-            <p>
-              Your personal statement and analysis results are stored for 48 hours from the time of
-              submission, after which they are automatically and permanently deleted. We strongly
-              recommend saving or downloading your results before the 48-hour window expires. We are
-              unable to recover results after deletion.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>4. Data retention</h2>
+              <p>
+                Your personal statement and analysis results are stored for 48 hours from the time of
+                submission, after which they are automatically and permanently deleted. We strongly
+                recommend saving or downloading your results before the 48-hour window expires. We are
+                unable to recover results after deletion.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">5. Nature of the analysis</h2>
-            <p>
-              The feedback provided by Shortlisted is generated by an AI model and is intended as a
-              study aid only. It does not constitute professional admissions advice and does not
-              guarantee admission to any university. GradeStack accepts no responsibility for
-              decisions made in reliance on the analysis.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>5. Nature of the analysis</h2>
+              <p>
+                The feedback provided by Shortlisted is generated by an AI model and is intended as a
+                study aid only. It does not constitute professional admissions advice and does not
+                guarantee admission to any university. GradeStack accepts no responsibility for
+                decisions made in reliance on the analysis.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">6. Acceptable use</h2>
-            <p>You agree not to:</p>
-            <ul className="list-disc pl-5 space-y-1 mt-2">
-              <li>Submit content that is defamatory, unlawful, or harmful.</li>
-              <li>Attempt to reverse-engineer, scrape, or abuse the service.</li>
-              <li>Use automated tools to submit statements in bulk.</li>
-            </ul>
-            <p className="mt-3">
-              We reserve the right to suspend access to users who breach these terms without notice
-              or refund.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>6. Acceptable use</h2>
+              <p style={{ marginBottom: "12px" }}>You agree not to:</p>
+              <ul style={{ paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <li>Submit content that is defamatory, unlawful, or harmful.</li>
+                <li>Attempt to reverse-engineer, scrape, or abuse the service.</li>
+                <li>Use automated tools to submit statements in bulk.</li>
+              </ul>
+              <p style={{ marginTop: "12px" }}>
+                We reserve the right to suspend access to users who breach these terms without notice
+                or refund.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">7. Limitation of liability</h2>
-            <p>
-              To the fullest extent permitted by law, GradeStack&apos;s total liability to you in
-              connection with Shortlisted shall not exceed the amount you paid for the analysis
-              (£4.99). We are not liable for any indirect, consequential, or special losses,
-              including loss of university place or opportunity.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>7. Limitation of liability</h2>
+              <p>
+                To the fullest extent permitted by law, GradeStack&apos;s total liability to you in
+                connection with Shortlisted shall not exceed the amount you paid for the analysis
+                (£4.99). We are not liable for any indirect, consequential, or special losses,
+                including loss of university place or opportunity.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">8. Governing law</h2>
-            <p>
-              These terms are governed by the laws of England and Wales. Any disputes shall be
-              subject to the exclusive jurisdiction of the courts of England and Wales.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>8. Governing law</h2>
+              <p>
+                These terms are governed by the laws of England and Wales. Any disputes shall be
+                subject to the exclusive jurisdiction of the courts of England and Wales.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">9. Contact</h2>
-            <p>
-              For any queries regarding these terms, contact us at{" "}
-              <a href="mailto:results@gradestack.co.uk" className="text-[#C24E2A] underline">
-                results@gradestack.co.uk
-              </a>.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>9. Contact</h2>
+              <p>
+                For any queries regarding these terms, contact us at{" "}
+                <a href="mailto:results@gradestack.co.uk" className="sl-content-link">
+                  results@gradestack.co.uk
+                </a>.
+              </p>
+            </section>
 
+          </div>
         </div>
       </div>
 
-      <footer className="border-t border-gray-100 px-6 py-5 text-center text-xs text-gray-400">
-        <p>
-          <a href="/shortlisted/privacy" className="hover:text-gray-600 transition">Privacy Policy</a>
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "20px 24px", textAlign: "center" }}>
+        <p style={{ fontSize: "12px" }}>
+          <a href="/shortlisted/privacy" className="sl-footer-link">Privacy Policy</a>
           {" · "}
-          <a href="/shortlisted/terms" className="hover:text-gray-600 transition">Terms &amp; Conditions</a>
+          <a href="/shortlisted/terms" className="sl-footer-link">Terms &amp; Conditions</a>
           {" · "}
-          &copy; 2026 Shortlisted
+          <span style={{ color: "rgba(255,255,255,0.25)" }}>&copy; 2026 Shortlisted</span>
         </p>
       </footer>
     </main>

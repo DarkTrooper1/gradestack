@@ -1,125 +1,142 @@
+const S = "var(--font-instrument-serif)";
+const N = "var(--font-instrument-sans), system-ui, sans-serif";
+
 export default function ShortlistedPrivacyPage() {
   return (
-    <main className="min-h-screen bg-white flex flex-col">
-      <header className="border-b border-gray-100 px-6 py-5">
-        <div className="max-w-3xl mx-auto flex items-baseline gap-3">
-          <a
-            href="/shortlisted"
-            className="text-2xl font-bold tracking-tight"
-            style={{ fontFamily: "Georgia, serif", color: "inherit", textDecoration: "none" }}
-          >
+    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: N }}>
+
+      {/* Nav */}
+      <header style={{
+        background: "rgba(13,31,60,0.8)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        padding: "16px 24px",
+      }}>
+        <div style={{ maxWidth: "720px", margin: "0 auto" }}>
+          <a href="/shortlisted" style={{ fontFamily: S, fontSize: "20px", color: "#ffffff", textDecoration: "none" }}>
             Shortlisted
           </a>
         </div>
       </header>
 
-      <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-12">
-        <h1
-          className="text-3xl font-bold text-gray-900 mb-2"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Privacy Policy
-        </h1>
-        <p className="text-sm text-gray-400 mb-10">Last updated: April 2025</p>
+      {/* Content */}
+      <div style={{ flex: 1, maxWidth: "720px", margin: "0 auto", width: "100%", padding: "48px 24px" }}>
+        <div style={{
+          background: "rgba(255,255,255,0.07)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "12px",
+          padding: "40px",
+        }}>
+          <h1 style={{ fontFamily: S, fontSize: "32px", fontWeight: 400, color: "#ffffff", marginBottom: "4px" }}>
+            Privacy Policy
+          </h1>
+          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", marginBottom: "40px" }}>
+            Last updated: April 2025
+          </p>
 
-        <div className="prose prose-gray max-w-none space-y-8 text-sm text-gray-700 leading-relaxed">
+          <div style={{ display: "flex", flexDirection: "column", gap: "32px", fontSize: "14px", color: "rgba(255,255,255,0.6)", lineHeight: 1.75 }}>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">1. Who we are</h2>
-            <p>
-              Shortlisted is a service operated by GradeStack. If you have any questions about
-              this policy, contact us at{" "}
-              <a href="mailto:results@gradestack.co.uk" className="text-[#C24E2A] underline">
-                results@gradestack.co.uk
-              </a>.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>1. Who we are</h2>
+              <p>
+                Shortlisted is a service operated by GradeStack. If you have any questions about
+                this policy, contact us at{" "}
+                <a href="mailto:results@gradestack.co.uk" className="sl-content-link">
+                  results@gradestack.co.uk
+                </a>.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">2. Data we collect</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Email address</strong> — provided by you on the submission form, used to deliver your results.</li>
-              <li><strong>Personal statement</strong> — the text you submit for analysis.</li>
-              <li><strong>Marketing preference</strong> — whether you opted in to receive tips and updates.</li>
-              <li><strong>Payment data</strong> — processed directly by Stripe; we never see or store card details.</li>
-            </ul>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>2. Data we collect</h2>
+              <ul style={{ paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Email address</strong> — provided by you on the submission form, used to deliver your results.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Personal statement</strong> — the text you submit for analysis.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Marketing preference</strong> — whether you opted in to receive tips and updates.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Payment data</strong> — processed directly by Stripe; we never see or store card details.</li>
+              </ul>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">3. How we use your data</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>To run the AI analysis of your personal statement and return scored feedback.</li>
-              <li>To email you your results after purchase.</li>
-              <li>If you opted in, to send you occasional tips on improving your personal statement.</li>
-            </ul>
-            <p className="mt-3">We do not sell or share your personal statement or email address with third parties for marketing purposes.</p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>3. How we use your data</h2>
+              <ul style={{ paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <li>To run the AI analysis of your personal statement and return scored feedback.</li>
+                <li>To email you your results after purchase.</li>
+                <li>If you opted in, to send you occasional tips on improving your personal statement.</li>
+              </ul>
+              <p style={{ marginTop: "12px" }}>
+                We do not sell or share your personal statement or email address with third parties for marketing purposes.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">4. Storage and retention</h2>
-            <p>
-              Your email address and personal statement are stored in Upstash Redis with a 48-hour TTL.
-              After 48 hours the data is automatically and permanently deleted. If you opted in to
-              marketing emails, your email address is retained in our mailing list until you unsubscribe.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>4. Storage and retention</h2>
+              <p>
+                Your email address and personal statement are stored in Upstash Redis with a 48-hour TTL.
+                After 48 hours the data is automatically and permanently deleted. If you opted in to
+                marketing emails, your email address is retained in our mailing list until you unsubscribe.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">5. Third-party processors</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Anthropic</strong> — your personal statement is sent to the Claude API to generate the analysis. Anthropic&apos;s API data is not used to train models.</li>
-              <li><strong>Stripe</strong> — handles payment processing. Subject to Stripe&apos;s own Privacy Policy.</li>
-              <li><strong>Resend</strong> — used to send results emails and (where opted in) marketing emails.</li>
-              <li><strong>Upstash</strong> — provides the Redis database used for temporary session storage.</li>
-              <li><strong>Vercel</strong> — hosts the application. Vercel may log request metadata per its own Privacy Policy.</li>
-            </ul>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>5. Third-party processors</h2>
+              <ul style={{ paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Anthropic</strong> — your personal statement is sent to the Claude API to generate the analysis. Anthropic&apos;s API data is not used to train models.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Stripe</strong> — handles payment processing. Subject to Stripe&apos;s own Privacy Policy.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Resend</strong> — used to send results emails and (where opted in) marketing emails.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Upstash</strong> — provides the Redis database used for temporary session storage.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Vercel</strong> — hosts the application. Vercel may log request metadata per its own Privacy Policy.</li>
+              </ul>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">6. Your rights (UK GDPR)</h2>
-            <p>Under UK GDPR you have the right to:</p>
-            <ul className="list-disc pl-5 space-y-1 mt-2">
-              <li><strong>Access</strong> the personal data we hold about you.</li>
-              <li><strong>Erasure</strong> — request deletion of your data at any time.</li>
-              <li><strong>Rectification</strong> — correct any inaccurate data.</li>
-              <li><strong>Object</strong> to processing for direct marketing.</li>
-              <li><strong>Withdraw consent</strong> — unsubscribe from marketing emails at any time via the unsubscribe link in any email we send.</li>
-            </ul>
-            <p className="mt-3">
-              To exercise any of these rights, email{" "}
-              <a href="mailto:results@gradestack.co.uk" className="text-[#C24E2A] underline">
-                results@gradestack.co.uk
-              </a>.
-              Note that because session data is deleted automatically after 48 hours, we may not be able
-              to locate data submitted before that window.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>6. Your rights (UK GDPR)</h2>
+              <p style={{ marginBottom: "12px" }}>Under UK GDPR you have the right to:</p>
+              <ul style={{ paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Access</strong> the personal data we hold about you.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Erasure</strong> — request deletion of your data at any time.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Rectification</strong> — correct any inaccurate data.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Object</strong> to processing for direct marketing.</li>
+                <li><strong style={{ color: "rgba(255,255,255,0.85)" }}>Withdraw consent</strong> — unsubscribe from marketing emails at any time via the unsubscribe link in any email we send.</li>
+              </ul>
+              <p style={{ marginTop: "12px" }}>
+                To exercise any of these rights, email{" "}
+                <a href="mailto:results@gradestack.co.uk" className="sl-content-link">
+                  results@gradestack.co.uk
+                </a>.
+                {" "}Note that because session data is deleted automatically after 48 hours, we may not be able
+                to locate data submitted before that window.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">7. Cookies</h2>
-            <p>
-              Shortlisted does not use cookies or tracking pixels. No cookie consent banner is required.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>7. Cookies</h2>
+              <p>
+                Shortlisted does not use cookies or tracking pixels. No cookie consent banner is required.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">8. Changes to this policy</h2>
-            <p>
-              We may update this policy from time to time. The date at the top of this page will reflect
-              the most recent revision.
-            </p>
-          </section>
+            <section>
+              <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#ffffff", marginBottom: "12px" }}>8. Changes to this policy</h2>
+              <p>
+                We may update this policy from time to time. The date at the top of this page will reflect
+                the most recent revision.
+              </p>
+            </section>
 
+          </div>
         </div>
       </div>
 
-      <footer className="border-t border-gray-100 px-6 py-5 text-center text-xs text-gray-400">
-        <p>
-          <a href="/shortlisted/privacy" className="hover:text-gray-600 transition">Privacy Policy</a>
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "20px 24px", textAlign: "center" }}>
+        <p style={{ fontSize: "12px" }}>
+          <a href="/shortlisted/privacy" className="sl-footer-link">Privacy Policy</a>
           {" · "}
-          <a href="/shortlisted/terms" className="hover:text-gray-600 transition">Terms &amp; Conditions</a>
+          <a href="/shortlisted/terms" className="sl-footer-link">Terms &amp; Conditions</a>
           {" · "}
-          &copy; 2026 Shortlisted
+          <span style={{ color: "rgba(255,255,255,0.25)" }}>&copy; 2026 Shortlisted</span>
         </p>
       </footer>
     </main>
