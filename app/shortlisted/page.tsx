@@ -45,6 +45,7 @@ export default function ShortlistedPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: data.sessionId }),
+        keepalive: true, // survives page navigation
       }).catch(() => {/* silently ignore — paid analysis can still run via retry */});
 
       router.push(`/shortlisted/results?id=${data.sessionId}`);
