@@ -123,10 +123,10 @@ export default function ShortlistedPage() {
       </div>
 
       {/* Form card */}
+      <div style={{ maxWidth: "560px", margin: "0 auto", padding: "0 24px" }}>
       <div style={{
         background: "#fff",
         borderRadius: "16px",
-        margin: "0 32px",
         padding: "32px",
         border: "1px solid #e8e3db",
         boxShadow: "0 4px 40px rgba(13,34,68,0.10)",
@@ -234,13 +234,15 @@ export default function ShortlistedPage() {
                 width: "100%",
                 fontSize: "15px",
                 fontWeight: 500,
-                fontFamily: sans,
+                fontFamily: "Inter, sans-serif",
                 cursor: canSubmit ? "pointer" : "not-allowed",
-                opacity: canSubmit ? 1 : 0.4,
+                opacity: canSubmit ? 1 : 0.45,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
+                appearance: "none",
+                WebkitAppearance: "none",
               }}
             >
               {loading ? (
@@ -257,6 +259,7 @@ export default function ShortlistedPage() {
             </p>
           </div>
         </form>
+      </div>
       </div>
 
       {/* Stats row */}
