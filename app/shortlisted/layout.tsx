@@ -22,11 +22,23 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg", apple: "/favicon.svg" },
 };
 
+const PAGE_BG = `
+  radial-gradient(ellipse 80% 50% at 50% -10%, #1e4a8a 0%, transparent 70%),
+  radial-gradient(ellipse 60% 40% at 80% 20%, #163461 0%, transparent 60%),
+  linear-gradient(180deg,
+    #0d2244 0%, #112a50 18%, #1a3666 28%, #2a4a7a 38%,
+    #6b7fa0 52%, #b8bfcc 65%, #ddd8ce 78%, #f0ebe0 90%, #f4f1eb 100%)
+`.trim();
+
 export default function ShortlistedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={`${cormorant.variable} ${inter.variable}`}
-      style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: "var(--font-inter), 'Inter', sans-serif" }}
+      style={{
+        background: PAGE_BG,
+        minHeight: "100vh",
+        fontFamily: "var(--font-inter), 'Inter', sans-serif",
+      }}
     >
       {children}
     </div>

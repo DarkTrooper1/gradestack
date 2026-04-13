@@ -21,12 +21,7 @@ type CriteriaKey = (typeof CRITERIA_ORDER)[number]["key"];
 const serif = "var(--font-cormorant), 'Cormorant Garamond', serif";
 const sans = "var(--font-inter), 'Inter', sans-serif";
 
-const HERO_STYLE: React.CSSProperties = {
-  background: "linear-gradient(160deg, #0d2244 0%, #163461 40%, #1e4080 70%, #0d2244 100%)",
-  position: "relative",
-};
-
-const CARD_STYLE: React.CSSProperties = {
+const CARD: React.CSSProperties = {
   background: "#fff",
   borderRadius: "12px",
   border: "1px solid #e8e3db",
@@ -34,34 +29,29 @@ const CARD_STYLE: React.CSSProperties = {
   padding: "24px",
 };
 
-const FOOTER_STYLE: React.CSSProperties = {
-  textAlign: "center",
-  padding: "20px",
-};
-
 function FooterLinks() {
   return (
-    <footer style={FOOTER_STYLE}>
+    <footer style={{ textAlign: "center", padding: "0 20px 24px" }}>
       <p style={{ margin: 0 }}>
-        <a href="/shortlisted/privacy" style={{ fontSize: "11px", color: "#c0b8ae", textDecoration: "none", margin: "0 8px" }}>Privacy Policy</a>
-        <a href="/shortlisted/terms" style={{ fontSize: "11px", color: "#c0b8ae", textDecoration: "none", margin: "0 8px" }}>Terms &amp; Conditions</a>
-        <span style={{ fontSize: "11px", color: "#c0b8ae", margin: "0 8px" }}>&copy; 2026 Shortlisted</span>
+        <a href="/shortlisted/privacy" style={{ fontSize: "11px", color: "#a09890", textDecoration: "none", margin: "0 8px" }}>Privacy Policy</a>
+        <a href="/shortlisted/terms" style={{ fontSize: "11px", color: "#a09890", textDecoration: "none", margin: "0 8px" }}>Terms &amp; Conditions</a>
+        <span style={{ fontSize: "11px", color: "#a09890", margin: "0 8px" }}>&copy; 2026 Shortlisted</span>
       </p>
     </footer>
   );
 }
 
-function HeroNav() {
+function Nav({ showNewAnalysis }: { showNewAnalysis?: boolean }) {
   return (
-    <div style={HERO_STYLE}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 40px" }}>
-        <a href="/shortlisted" style={{ fontFamily: serif, fontSize: "22px", color: "#fff", fontWeight: 600, textDecoration: "none" }}>
-          Shortlisted
-        </a>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "22px 40px" }}>
+      <a href="/shortlisted" style={{ fontFamily: serif, fontSize: "22px", fontWeight: 600, color: "#fff", textDecoration: "none" }}>
+        Shortlisted
+      </a>
+      {showNewAnalysis && (
         <a href="/shortlisted" style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", fontFamily: sans, textDecoration: "none" }}>
           New analysis
         </a>
-      </div>
+      )}
     </div>
   );
 }
@@ -174,9 +164,8 @@ function ResultsContent() {
 
   if (!sessionId) {
     return (
-      <main style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: sans }}>
-        <HeroNav />
-        <div style={{ height: "64px", marginTop: "-64px", background: "linear-gradient(to bottom, transparent, #f4f1eb)", zIndex: 1, position: "relative" }} />
+      <main style={{ minHeight: "100vh", fontFamily: sans }}>
+        <Nav />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
           <div style={{ textAlign: "center" }}>
             <p style={{ color: "#4a4540", marginBottom: "16px" }}>No session found.</p>
@@ -190,9 +179,8 @@ function ResultsContent() {
 
   if (loading) {
     return (
-      <main style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: sans }}>
-        <HeroNav />
-        <div style={{ height: "64px", marginTop: "-64px", background: "linear-gradient(to bottom, transparent, #f4f1eb)", zIndex: 1, position: "relative" }} />
+      <main style={{ minHeight: "100vh", fontFamily: sans }}>
+        <Nav />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
           <div style={{ textAlign: "center" }}>
             <div
@@ -209,9 +197,8 @@ function ResultsContent() {
 
   if (error) {
     return (
-      <main style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: sans }}>
-        <HeroNav />
-        <div style={{ height: "64px", marginTop: "-64px", background: "linear-gradient(to bottom, transparent, #f4f1eb)", zIndex: 1, position: "relative" }} />
+      <main style={{ minHeight: "100vh", fontFamily: sans }}>
+        <Nav />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
           <div style={{ textAlign: "center", maxWidth: "360px" }}>
             <p style={{ color: "#c00", marginBottom: "16px" }}>{error}</p>
@@ -225,9 +212,8 @@ function ResultsContent() {
 
   if (!free) {
     return (
-      <main style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: sans }}>
-        <HeroNav />
-        <div style={{ height: "64px", marginTop: "-64px", background: "linear-gradient(to bottom, transparent, #f4f1eb)", zIndex: 1, position: "relative" }} />
+      <main style={{ minHeight: "100vh", fontFamily: sans }}>
+        <Nav />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
           <p style={{ color: "#4a4540" }}>No results found.</p>
         </div>
@@ -240,40 +226,26 @@ function ResultsContent() {
   const isPaid = !!paid;
 
   return (
-    <main style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: sans }}>
+    <main style={{ minHeight: "100vh", fontFamily: sans }}>
 
-      {/* Hero */}
-      <div style={HERO_STYLE}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 40px" }}>
-          <a href="/shortlisted" style={{ fontFamily: serif, fontSize: "22px", color: "#fff", fontWeight: 600, textDecoration: "none" }}>
-            Shortlisted
-          </a>
-          <a href="/shortlisted" style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", fontFamily: sans, textDecoration: "none" }}>
-            New analysis
-          </a>
-        </div>
-      </div>
+      <Nav showNewAnalysis />
 
-      {/* Fade */}
-      <div style={{ height: "64px", marginTop: "-64px", background: "linear-gradient(to bottom, transparent, #f4f1eb)", zIndex: 1, position: "relative" }} />
-
-      {/* Content */}
-      <div style={{ maxWidth: "680px", margin: "0 auto", padding: "32px 24px", display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ maxWidth: "680px", margin: "0 auto", padding: "24px 24px 0", display: "flex", flexDirection: "column", gap: "16px" }}>
 
         {/* Score card */}
         <div
           className="flex flex-col sm:flex-row items-center gap-8"
-          style={CARD_STYLE}
+          style={CARD}
         >
           <ScoreRing score={analysis.overall_score} size={140} />
           <div className="flex-1 text-center sm:text-left">
-            <h1 style={{ fontFamily: serif, fontSize: "24px", color: "#0d2244", marginBottom: "8px" }}>
+            <h1 style={{ fontFamily: serif, fontSize: "24px", color: "#0d2244", marginBottom: "8px", marginTop: 0 }}>
               Your Results
             </h1>
-            <p style={{ fontSize: "15px", fontWeight: 600, color: "#0d2244", marginBottom: "8px" }}>
+            <p style={{ fontSize: "15px", fontWeight: 600, color: "#0d2244", marginBottom: "8px", marginTop: 0 }}>
               {analysis.overall_verdict}
             </p>
-            <p style={{ fontSize: "14px", color: "#4a4540", lineHeight: 1.65 }}>
+            <p style={{ fontSize: "14px", color: "#4a4540", lineHeight: 1.65, margin: 0 }}>
               {analysis.overall_summary}
             </p>
           </div>
@@ -281,16 +253,16 @@ function ResultsContent() {
 
         {/* Polling banner */}
         {polling && (
-          <div style={{ ...CARD_STYLE, display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ background: "#fff", border: "1px solid #e8e3db", borderRadius: "12px", padding: "20px 24px", display: "flex", alignItems: "center", gap: "16px" }}>
             <div
               className="animate-spin flex-shrink-0"
               style={{ width: "20px", height: "20px", borderRadius: "50%", border: "2px solid rgba(13,34,68,0.1)", borderTopColor: "#0d2244" }}
             />
             <div>
-              <p style={{ fontSize: "14px", fontWeight: 600, color: "#0d2244", marginBottom: "2px" }}>
+              <p style={{ fontSize: "14px", fontWeight: 600, color: "#0d2244", marginBottom: "2px", marginTop: 0 }}>
                 Unlocking your full analysis...
               </p>
-              <p style={{ fontSize: "12px", color: "#4a4540" }}>
+              <p style={{ fontSize: "12px", color: "#9e9890", margin: 0 }}>
                 Confirming payment. This usually takes a few seconds.
               </p>
             </div>
@@ -299,10 +271,10 @@ function ResultsContent() {
 
         {/* Criterion cards */}
         <section>
-          <h2 style={{ fontFamily: serif, fontSize: "20px", color: "#0d2244", marginBottom: "16px" }}>
+          <h2 style={{ fontFamily: serif, fontSize: "20px", color: "#0d2244", marginBottom: "12px", marginTop: 0 }}>
             Criterion Scores
           </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {CRITERIA_ORDER.map(({ key, label }, index) => {
               const criterion = analysis.criteria[key as CriteriaKey];
               const isLocked = !isPaid && index > 0;
@@ -315,40 +287,33 @@ function ResultsContent() {
 
         {/* Unlock CTA */}
         {!isPaid && !polling && (
-          <div style={{
-            background: "#fff",
-            borderRadius: "12px",
-            border: "2px dashed #e8e3db",
-            boxShadow: "0 2px 16px rgba(13,34,68,0.06)",
-            padding: "36px 32px",
-            textAlign: "center",
-          }}>
+          <div style={{ background: "#fff", borderRadius: "12px", border: "2px dashed #e8e3db", padding: "32px 24px", textAlign: "center" }}>
             <div style={{
-              width: "48px", height: "48px", borderRadius: "50%",
-              background: "rgba(13,34,68,0.06)", border: "1px solid rgba(13,34,68,0.12)",
+              width: "44px", height: "44px", borderRadius: "50%",
+              background: "#f4f1eb", border: "1px solid #e8e3db",
               display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 20px",
+              margin: "0 auto 16px",
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d2244" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d2244" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </div>
-            <h2 style={{ fontFamily: serif, fontSize: "22px", color: "#0d2244", marginBottom: "8px" }}>
+            <h2 style={{ fontFamily: serif, fontSize: "22px", color: "#0d2244", marginBottom: "8px", marginTop: 0 }}>
               Unlock your full analysis
             </h2>
-            <p style={{ fontSize: "14px", color: "#4a4540", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
+            <p style={{ fontSize: "14px", color: "#9e9890", maxWidth: "340px", margin: "0 auto 20px", lineHeight: 1.65 }}>
               Get detailed feedback on all 5 criteria, paragraph-by-paragraph annotations, and targeted rewrite suggestions.
             </p>
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 auto 28px", maxWidth: "300px", display: "flex", flexDirection: "column", gap: "10px", textAlign: "left" }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 auto 24px", maxWidth: "280px", display: "flex", flexDirection: "column", gap: "8px", textAlign: "left" }}>
               {[
                 "All 5 criteria with scores, summaries & fixes",
                 "Paragraph-by-paragraph annotations",
                 "2-3 targeted rewrite suggestions",
                 "Full results emailed to you",
               ].map((item) => (
-                <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "14px", color: "#4a4540" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d2244" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "2px" }}>
+                <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "14px", color: "#4a4540" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d2244" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "3px" }}>
                     <path d="M5 13l4 4L19 7" />
                   </svg>
                   {item}
@@ -359,20 +324,29 @@ function ResultsContent() {
               onClick={handleUnlock}
               disabled={checkoutLoading}
               style={{
-                width: "100%", maxWidth: "280px",
-                background: "#0d2244", color: "#f5c842",
-                border: "none", borderRadius: "10px",
-                padding: "15px 24px", fontSize: "15px", fontWeight: 500,
-                fontFamily: sans, cursor: checkoutLoading ? "not-allowed" : "pointer",
+                background: "#0d2244",
+                color: "#f5c842",
+                border: "none",
+                borderRadius: "10px",
+                padding: "15px",
+                width: "100%",
+                maxWidth: "260px",
+                fontSize: "15px",
+                fontWeight: 500,
+                fontFamily: sans,
+                cursor: checkoutLoading ? "not-allowed" : "pointer",
                 opacity: checkoutLoading ? 0.6 : 1,
-                display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
               }}
             >
               {checkoutLoading ? (
                 <>
                   <span
                     className="animate-spin"
-                    style={{ width: "16px", height: "16px", border: "2px solid rgba(245,200,66,0.25)", borderTopColor: "#f5c842", borderRadius: "50%", flexShrink: 0 }}
+                    style={{ width: "16px", height: "16px", border: "2px solid rgba(245,200,66,0.3)", borderTopColor: "#f5c842", borderRadius: "50%", flexShrink: 0 }}
                   />
                   Redirecting to payment...
                 </>
@@ -380,7 +354,7 @@ function ResultsContent() {
                 "Unlock full analysis — £4.99"
               )}
             </button>
-            <p style={{ fontSize: "11px", color: "#b0a898", marginTop: "12px" }}>
+            <p style={{ fontSize: "11px", color: "#b0a898", marginTop: "10px", marginBottom: 0 }}>
               Secure payment via Stripe
             </p>
           </div>
@@ -389,7 +363,7 @@ function ResultsContent() {
         {/* Paragraph annotations */}
         {isPaid && paid.paragraph_annotations?.length > 0 && (
           <section>
-            <h2 style={{ fontFamily: serif, fontSize: "20px", color: "#0d2244", marginBottom: "16px" }}>
+            <h2 style={{ fontFamily: serif, fontSize: "20px", color: "#0d2244", marginBottom: "12px", marginTop: 0 }}>
               Paragraph Breakdown
             </h2>
             <ParagraphAnnotations annotations={paid.paragraph_annotations} />
@@ -399,7 +373,7 @@ function ResultsContent() {
         {/* Rewrite suggestions */}
         {isPaid && paid.rewrite_suggestions?.length > 0 && (
           <section>
-            <h2 style={{ fontFamily: serif, fontSize: "20px", color: "#0d2244", marginBottom: "16px" }}>
+            <h2 style={{ fontFamily: serif, fontSize: "20px", color: "#0d2244", marginBottom: "12px", marginTop: 0 }}>
               Rewrite Suggestions
             </h2>
             <RewriteSuggestions suggestions={paid.rewrite_suggestions} />
@@ -408,7 +382,7 @@ function ResultsContent() {
 
       </div>
 
-      {/* Footer */}
+      <div style={{ padding: "24px" }} />
       <FooterLinks />
     </main>
   );
@@ -418,7 +392,7 @@ export default function ShortlistedResultsPage() {
   return (
     <Suspense
       fallback={
-        <div style={{ background: "#f4f1eb", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div
             className="animate-spin"
             style={{ width: "40px", height: "40px", borderRadius: "50%", border: "4px solid rgba(13,34,68,0.1)", borderTopColor: "#0d2244" }}
