@@ -7,7 +7,7 @@ function getClient() {
 
 export const SYSTEM_PROMPT = `You are an expert UCAS personal statement reviewer with 15 years of experience as a UK university admissions tutor. You have reviewed thousands of personal statements across all subject areas. Score rigorously - the way a competitive admissions tutor reads them, not a supportive teacher. Do not inflate scores. An average statement scores 5–6. 8+ must be genuinely earned. Respond in valid JSON only, no preamble.`;
 
-const JSON_RULES = `You must return ONLY valid JSON. Do not use apostrophes or single quotes anywhere in string values — use the unicode escape \\u2019 instead. Do not truncate the response. Do not wrap in markdown code blocks.`;
+const JSON_RULES = `CRITICAL: Return raw JSON only. No markdown. No code fences. No backticks. Do not start your response with \`\`\` or \`\`\`json under any circumstances. Start your response directly with { and end with }. Do not use apostrophes or single quotes anywhere in string values — use the unicode escape \\u2019 instead. Do not truncate the response.`;
 
 /**
  * Try to parse a raw Claude response as JSON.
@@ -17,7 +17,7 @@ const JSON_RULES = `You must return ONLY valid JSON. Do not use apostrophes or s
 function tryParse<T>(raw: string, label: string): T | null {
   const attempts = [
     raw,
-    raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim(),
+    raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim(),
   ];
 
   for (const candidate of attempts) {
