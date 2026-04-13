@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { redis, SESSION_TTL } from "@/lib/shortlisted/redis";
-import { runFreeAnalysis, runPaidAnalysis } from "@/lib/shortlisted/claude";
+import { runFreeAnalysis } from "@/lib/shortlisted/claude";
 import { randomUUID } from "crypto";
 
-// Both Claude calls run in parallel — total time is ~max(free, paid), not free+paid.
-// Paid analysis with 2048 max_tokens typically completes in 20-35s.
-// Each call retries once internally on a JSON parse failure before throwing.
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
@@ -40,30 +37,17 @@ export async function POST(req: NextRequest) {
 
     const sessionId = randomUUID();
 
-    // Persist meta first so webhook/results routes can always find it
     await redis.set(
       `session:${sessionId}:meta`,
       { statement, email },
       { ex: SESSION_TTL }
     );
 
-    // Run both analyses in parallel — each retries once internally on parse failure
-    const [freeAnalysis, paidAnalysis] = await Promise.all([
-      runFreeAnalysis(statement),
-      runPaidAnalysis(statement),
-    ]);
+    const freeAnalysis = await runFreeAnalysis(statement);
 
-    // Store free result and locked paid result in parallel.
-    // Paid data is wrapped in a locked envelope — the results route strips it
-    // only after paid_confirmed is written by the webhook.
-    await Promise.all([
-      redis.set(`session:${sessionId}:free`, freeAnalysis, { ex: SESSION_TTL }),
-      redis.set(
-        `session:${sessionId}:paid`,
-        { locked: true, data: paidAnalysis },
-        { ex: SESSION_TTL }
-      ),
-    ]);
+    await redis.set(`session:${sessionId}:free`, freeAnalysis, {
+      ex: SESSION_TTL,
+    });
 
     return NextResponse.json({ sessionId });
   } catch (err) {
