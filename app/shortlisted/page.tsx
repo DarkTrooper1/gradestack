@@ -7,8 +7,8 @@ const MIN_CHARS = 100;
 const MAX_CHARS = 4000;
 const WARN_CHARS = 3800;
 
-const S = "var(--font-instrument-serif)";
-const N = "var(--font-instrument-sans), system-ui, sans-serif";
+const serif = "var(--font-cormorant), 'Cormorant Garamond', serif";
+const sans = "var(--font-inter), 'Inter', sans-serif";
 
 export default function ShortlistedPage() {
   const router = useRouter();
@@ -53,82 +53,108 @@ export default function ShortlistedPage() {
   }
 
   const charColour =
-    charCount > MAX_CHARS ? "#ef4444" :
-    charCount >= WARN_CHARS ? "#f59e0b" :
-    charCount >= MIN_CHARS ? "#4ade80" :
-    "rgba(255,255,255,0.25)";
+    charCount > MAX_CHARS ? "#ee5533" :
+    charCount >= WARN_CHARS ? "#d97706" :
+    charCount >= MIN_CHARS ? "#22c55e" :
+    "#ccc";
+
+  const inputStyle: React.CSSProperties = {
+    background: "#faf9f7",
+    border: "1.5px solid #ede9e2",
+    color: "#1a1a1a",
+    padding: "11px 14px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontFamily: sans,
+    width: "100%",
+    display: "block",
+    outline: "none",
+    boxSizing: "border-box",
+  };
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: N }}>
+    <main style={{ background: "#f4f1eb", minHeight: "100vh", fontFamily: sans }}>
 
-      {/* Nav */}
-      <header style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: "rgba(13,31,60,0.8)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
-        padding: "16px 24px",
+      {/* Hero */}
+      <div style={{
+        background: "linear-gradient(160deg, #0d2244 0%, #163461 40%, #1e4080 70%, #0d2244 100%)",
+        paddingBottom: "80px",
+        position: "relative",
       }}>
-        <div style={{ maxWidth: "560px", margin: "0 auto", display: "flex", alignItems: "center", gap: "12px" }}>
-          <a href="/shortlisted" style={{ fontFamily: S, fontSize: "22px", color: "#ffffff", textDecoration: "none" }}>
+        {/* Nav */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 40px" }}>
+          <a href="/shortlisted" style={{ fontFamily: serif, fontSize: "22px", color: "#fff", fontWeight: 600, textDecoration: "none" }}>
             Shortlisted
           </a>
-          <span className="hidden sm:inline" style={{ fontSize: "13px", color: "rgba(255,255,255,0.45)" }}>
-            AI feedback on your UCAS personal statement
+          <span style={{
+            background: "rgba(255,255,255,0.1)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            color: "rgba(255,255,255,0.6)",
+            fontSize: "11px",
+            padding: "4px 12px",
+            borderRadius: "100px",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+          }}>
+            AI-powered
           </span>
         </div>
-      </header>
 
-      {/* Content */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "56px 24px 40px" }}>
-        <div style={{ width: "100%", maxWidth: "520px" }}>
-
-          {/* Pill badge */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "28px" }}>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "999px", padding: "6px 16px",
-              fontSize: "11px", fontWeight: 500, letterSpacing: "0.08em",
-              textTransform: "uppercase" as const, color: "rgba(255,255,255,0.6)",
-            }}>
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#e8b84b", flexShrink: 0 }} />
-              UCAS Personal Statement Review
-            </span>
-          </div>
-
-          {/* H1 */}
+        {/* Hero content */}
+        <div style={{ maxWidth: "600px", margin: "0 auto", padding: "0 40px", textAlign: "center" }}>
           <h1 style={{
-            fontFamily: S,
-            fontSize: "clamp(34px, 6vw, 42px)",
-            fontWeight: 400,
-            lineHeight: 1.15,
-            textAlign: "center",
+            fontFamily: serif,
+            fontSize: "52px",
+            fontWeight: 600,
+            lineHeight: 1.1,
+            color: "#fff",
             marginBottom: "16px",
-            color: "#ffffff",
           }}>
-            Is your statement{" "}
-            <em style={{ color: "#e8b84b", fontStyle: "italic" }}>good enough?</em>
+            Is your statement<br />
+            <em style={{ fontStyle: "italic", color: "#f5c842" }}>good enough?</em>
           </h1>
-
-          {/* Subheading */}
           <p style={{
-            fontSize: "14px", color: "rgba(255,255,255,0.45)",
-            textAlign: "center", lineHeight: 1.65, marginBottom: "40px",
+            fontSize: "14px",
+            color: "rgba(255,255,255,0.5)",
+            lineHeight: 1.65,
+            fontWeight: 300,
           }}>
             Paste your UCAS personal statement below for an honest, expert-level AI review
             — scored the way a competitive admissions tutor reads it.
           </p>
+        </div>
+      </div>
 
-          {/* Form */}
+      {/* Fade */}
+      <div style={{
+        height: "80px",
+        marginTop: "-80px",
+        background: "linear-gradient(to bottom, transparent, #f4f1eb)",
+        position: "relative",
+        zIndex: 1,
+      }} />
+
+      {/* Center wrapper */}
+      <div style={{ maxWidth: "520px", margin: "0 auto", padding: "0 24px" }}>
+
+        {/* Form card */}
+        <div style={{
+          background: "#fff",
+          borderRadius: "16px",
+          marginTop: "-40px",
+          padding: "32px",
+          border: "1px solid #e8e3db",
+          boxShadow: "0 4px 40px rgba(13,34,68,0.12)",
+          position: "relative",
+          zIndex: 2,
+        }}>
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {/* Email */}
             <div>
               <label
                 htmlFor="sl-email"
-                style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "rgba(255,255,255,0.7)", marginBottom: "8px" }}
+                style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "#9e9890", marginBottom: "8px" }}
               >
                 Your email address
               </label>
@@ -139,26 +165,25 @@ export default function ShortlistedPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="sl-input"
-                style={{ fontFamily: N, fontSize: "14px" }}
+                style={inputStyle}
               />
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", marginTop: "6px" }}>
+              <p style={{ fontSize: "12px", color: "#b0a898", marginTop: "6px" }}>
                 Your full results will be emailed here after purchase.
               </p>
             </div>
 
-            {/* Email opt-in */}
+            {/* Opt-in */}
             <div style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
               <input
                 id="sl-optin"
                 type="checkbox"
                 checked={optIn}
                 onChange={(e) => setOptIn(e.target.checked)}
-                style={{ marginTop: "2px", width: "16px", height: "16px", cursor: "pointer", accentColor: "#e8b84b", flexShrink: 0 }}
+                style={{ marginTop: "2px", width: "16px", height: "16px", cursor: "pointer", accentColor: "#0d2244", flexShrink: 0 }}
               />
               <label
                 htmlFor="sl-optin"
-                style={{ fontSize: "13px", color: "rgba(255,255,255,0.45)", cursor: "pointer", lineHeight: 1.5 }}
+                style={{ fontSize: "13px", color: "#9e9890", cursor: "pointer", lineHeight: 1.5 }}
               >
                 Send me tips to improve my personal statement (optional)
               </label>
@@ -168,7 +193,7 @@ export default function ShortlistedPage() {
             <div>
               <label
                 htmlFor="sl-statement"
-                style={{ display: "block", fontSize: "13px", fontWeight: 500, color: "rgba(255,255,255,0.7)", marginBottom: "8px" }}
+                style={{ display: "block", fontSize: "11px", fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "#9e9890", marginBottom: "8px" }}
               >
                 Your personal statement
               </label>
@@ -177,21 +202,24 @@ export default function ShortlistedPage() {
                 value={statement}
                 onChange={(e) => setStatement(e.target.value)}
                 placeholder="Paste your personal statement here..."
-                rows={16}
-                className="sl-input"
-                style={{ fontFamily: "monospace", fontSize: "13px", lineHeight: 1.6, resize: "none" }}
+                style={{
+                  ...inputStyle,
+                  height: "120px",
+                  resize: "none",
+                  color: "#555",
+                }}
               />
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px" }}>
                 <span style={{ fontSize: "12px", fontWeight: 500, color: charColour, fontVariantNumeric: "tabular-nums" }}>
                   {charCount.toLocaleString()} / {MAX_CHARS.toLocaleString()} characters
                 </span>
                 {charCount < MIN_CHARS && charCount > 0 && (
-                  <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>
+                  <span style={{ fontSize: "12px", color: "#b0a898" }}>
                     {MIN_CHARS - charCount} more to go
                   </span>
                 )}
                 {charCount > MAX_CHARS && (
-                  <span style={{ fontSize: "12px", color: "#ef4444" }}>
+                  <span style={{ fontSize: "12px", color: "#ee5533" }}>
                     {charCount - MAX_CHARS} over limit
                   </span>
                 )}
@@ -201,31 +229,34 @@ export default function ShortlistedPage() {
             {/* Error */}
             {error && (
               <div style={{
-                background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)",
-                borderRadius: "8px", padding: "12px 16px", fontSize: "14px", color: "#fca5a5",
+                background: "#fff5f5",
+                border: "1px solid #fcc",
+                borderRadius: "8px",
+                padding: "12px 14px",
+                fontSize: "13px",
+                color: "#c00",
               }}>
                 {error}
               </div>
             )}
 
             {/* Submit */}
-            <div style={{ paddingTop: "4px" }}>
+            <div>
               <button
                 type="submit"
                 disabled={!canSubmit}
                 style={{
-                  width: "100%",
-                  background: "#e8b84b",
-                  color: "#0d1f3c",
+                  background: "#0d2244",
+                  color: "#f5c842",
                   border: "none",
-                  borderRadius: "8px",
-                  padding: "16px 24px",
+                  borderRadius: "10px",
+                  padding: "15px",
+                  width: "100%",
                   fontSize: "15px",
-                  fontWeight: 600,
-                  fontFamily: N,
+                  fontWeight: 500,
+                  fontFamily: sans,
                   cursor: canSubmit ? "pointer" : "not-allowed",
                   opacity: canSubmit ? 1 : 0.4,
-                  transition: "opacity 0.15s",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -241,51 +272,39 @@ export default function ShortlistedPage() {
                   "Analyse my statement"
                 )}
               </button>
-              <p style={{ textAlign: "center", fontSize: "12px", color: "rgba(255,255,255,0.3)", marginTop: "10px" }}>
-                First criterion free.&nbsp; Full analysis £4.99.
+              <p style={{ textAlign: "center", fontSize: "12px", color: "#bbb", marginTop: "10px" }}>
+                First criterion free · Full analysis £4.99
               </p>
             </div>
           </form>
-
-          {/* Stats row */}
-          <div style={{
-            marginTop: "52px",
-            paddingTop: "32px",
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-          }}>
-            {[
-              { value: "5", label: "scored criteria" },
-              { value: "£4.99", label: "full analysis" },
-              { value: "48h", label: "results stored" },
-            ].map((stat, i) => (
-              <div key={stat.label} style={{
-                textAlign: "center",
-                borderRight: i < 2 ? "1px solid rgba(255,255,255,0.08)" : undefined,
-                padding: "0 12px",
-              }}>
-                <p style={{ fontFamily: S, fontSize: "26px", color: "#ffffff", marginBottom: "4px", lineHeight: 1 }}>
-                  {stat.value}
-                </p>
-                <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
-
         </div>
+
+        {/* Stats row */}
+        <div style={{ display: "flex", justifyContent: "center", gap: "48px", padding: "32px" }}>
+          {[
+            { value: "5", label: "scored criteria" },
+            { value: "£4.99", label: "full analysis" },
+            { value: "48h", label: "results stored" },
+          ].map((stat) => (
+            <div key={stat.label} style={{ textAlign: "center" }}>
+              <p style={{ fontFamily: serif, fontSize: "26px", fontWeight: 600, color: "#0d2244", textAlign: "center", lineHeight: 1, margin: 0 }}>
+                {stat.value}
+              </p>
+              <p style={{ fontSize: "10px", color: "#b0a898", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px", textAlign: "center", margin: "2px 0 0" }}>
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {/* Footer */}
-      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "20px 24px", textAlign: "center" }}>
-        <p style={{ fontSize: "12px" }}>
-          <a href="/shortlisted/privacy" className="sl-footer-link">Privacy Policy</a>
-          {" · "}
-          <a href="/shortlisted/terms" className="sl-footer-link">Terms &amp; Conditions</a>
-          {" · "}
-          <span style={{ color: "rgba(255,255,255,0.25)" }}>&copy; 2026 Shortlisted</span>
+      <footer style={{ textAlign: "center", padding: "20px" }}>
+        <p style={{ margin: 0 }}>
+          <a href="/shortlisted/privacy" style={{ fontSize: "11px", color: "#c0b8ae", textDecoration: "none", margin: "0 8px" }}>Privacy Policy</a>
+          <a href="/shortlisted/terms" style={{ fontSize: "11px", color: "#c0b8ae", textDecoration: "none", margin: "0 8px" }}>Terms &amp; Conditions</a>
+          <span style={{ fontSize: "11px", color: "#c0b8ae", margin: "0 8px" }}>&copy; 2026 Shortlisted</span>
         </p>
       </footer>
     </main>

@@ -11,9 +11,9 @@ export default function ScoreRing({ score, size = 160 }: ScoreRingProps) {
   const offset = circumference - (score / 100) * circumference;
 
   const getColour = (s: number) => {
-    if (s >= 70) return "#4ade80";
-    if (s >= 50) return "#e8b84b";
-    return "#f87171";
+    if (s >= 70) return "#22c55e";
+    if (s >= 50) return "#d97706";
+    return "#dc2626";
   };
 
   return (
@@ -27,7 +27,7 @@ export default function ScoreRing({ score, size = 160 }: ScoreRingProps) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.1)"
+          stroke="rgba(13,34,68,0.08)"
           strokeWidth={10}
         />
         <circle
@@ -49,12 +49,12 @@ export default function ScoreRing({ score, size = 160 }: ScoreRingProps) {
           style={{
             fontSize: size * 0.28,
             color: getColour(score),
-            fontFamily: "var(--font-instrument-serif)",
+            fontFamily: "var(--font-cormorant), 'Cormorant Garamond', serif",
           }}
         >
           {score}
         </span>
-        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.45)", marginTop: "4px" }}>/ 100</span>
+        <span style={{ fontSize: "11px", color: "#b0a898", marginTop: "4px" }}>/ 100</span>
       </div>
     </div>
   );
