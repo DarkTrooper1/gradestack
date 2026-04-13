@@ -106,8 +106,7 @@ export default function ShortlistedPage() {
           marginBottom: "16px",
           margin: "0 0 16px",
         }}>
-          Is your statement<br />
-          <em style={{ fontStyle: "italic", color: "#f5c842" }}>good enough?</em>
+          Is your statement <em style={{ fontStyle: "italic", color: "#f5c842" }}>good enough?</em>
         </h1>
         <p style={{
           color: "rgba(255,255,255,0.5)",
@@ -127,7 +126,7 @@ export default function ShortlistedPage() {
       <div style={{
         background: "#fff",
         borderRadius: "16px",
-        padding: "32px",
+        padding: "40px",
         border: "1px solid #e8e3db",
         boxShadow: "0 4px 40px rgba(13,34,68,0.10)",
         position: "relative",
@@ -225,6 +224,7 @@ export default function ShortlistedPage() {
             <button
               type="submit"
               disabled={!canSubmit}
+              className="shortlisted-btn"
               style={{
                 background: "#0d2244",
                 color: "#f5c842",
@@ -270,10 +270,10 @@ export default function ShortlistedPage() {
           { value: "48h", label: "results stored" },
         ].map((stat) => (
           <div key={stat.label} style={{ textAlign: "center" }}>
-            <p style={{ fontFamily: serif, fontSize: "26px", fontWeight: 600, color: "#0d2244", margin: 0, lineHeight: 1 }}>
+            <p style={{ fontFamily: serif, fontSize: "32px", fontWeight: 600, color: "#0d2244", margin: 0, lineHeight: 1 }}>
               {stat.value}
             </p>
-            <p style={{ fontSize: "10px", color: "#b0a898", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px", marginBottom: 0 }}>
+            <p style={{ fontSize: "10px", color: "#8a8070", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px", marginBottom: 0 }}>
               {stat.label}
             </p>
           </div>

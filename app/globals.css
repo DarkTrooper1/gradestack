@@ -139,6 +139,13 @@
   }
 }
 
+/* Shortlisted button override */
+.shortlisted-btn {
+  background: #0d2244 !important;
+  color: #f5c842 !important;
+  border: none !important;
+}
+
 /* Shortlisted dark input styles */
 .sl-input {
   display: block;
