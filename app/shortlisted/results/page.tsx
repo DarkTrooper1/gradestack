@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import ScoreRing from "@/components/shortlisted/ScoreRing";
 import CriterionCard from "@/components/shortlisted/CriterionCard";
 import ParagraphAnnotations from "@/components/shortlisted/ParagraphAnnotations";
@@ -30,6 +30,20 @@ function ResultsContent() {
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [polling, setPolling] = useState(false);
+  const analysePaidFiredRef = useRef(false);
+
+  // Fire paid analysis on mount — keepalive so it survives any navigation.
+  // Ref prevents double-firing in React StrictMode.
+  useEffect(() => {
+    if (!sessionId || analysePaidFiredRef.current) return;
+    analysePaidFiredRef.current = true;
+    fetch("/shortlisted/api/analyse-paid", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId }),
+      keepalive: true,
+    }).catch(() => {/* ignore — paid data may already exist or will be retried */});
+  }, [sessionId]);
 
   const fetchResults = useCallback(async () => {
     if (!sessionId) return;

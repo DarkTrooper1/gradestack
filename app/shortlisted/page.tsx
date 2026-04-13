@@ -40,14 +40,6 @@ export default function ShortlistedPage() {
       }
       if (!res.ok) throw new Error(data.error ?? "Analysis failed. Please try again.");
 
-      // Fire paid analysis in background — don't await, user proceeds immediately
-      fetch("/shortlisted/api/analyse-paid", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: data.sessionId }),
-        keepalive: true, // survives page navigation
-      }).catch(() => {/* silently ignore — paid analysis can still run via retry */});
-
       router.push(`/shortlisted/results?id=${data.sessionId}`);
     } catch (err) {
       setError(
