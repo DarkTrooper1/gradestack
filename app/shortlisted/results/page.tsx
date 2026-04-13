@@ -370,11 +370,17 @@ function ResultsContent() {
           </section>
         )}
 
-        {/* Footer */}
-        <div className="pb-8 text-center text-xs text-gray-400">
-          <p>Results stored for 48 hours · Powered by Claude AI</p>
-        </div>
       </div>
+
+      <footer className="border-t border-gray-100 px-6 py-5 text-center text-xs text-gray-400">
+        <p>
+          <a href="/shortlisted/privacy" className="hover:text-gray-600 transition">Privacy Policy</a>
+          {" · "}
+          <a href="/shortlisted/terms" className="hover:text-gray-600 transition">Terms &amp; Conditions</a>
+          {" · "}
+          &copy; 2025 GradeStack
+        </p>
+      </footer>
     </main>
   );
 }

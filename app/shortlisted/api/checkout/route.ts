@@ -40,6 +40,12 @@ export async function POST(req: NextRequest) {
       metadata: { sessionId, email },
       success_url: `${baseUrl}/shortlisted/results?id=${sessionId}&payment=success`,
       cancel_url: `${baseUrl}/shortlisted/results?id=${sessionId}`,
+      custom_text: {
+        submit: {
+          message:
+            "By purchasing you agree to our Terms & Conditions: https://www.gradestack.co.uk/shortlisted/terms",
+        },
+      },
     });
 
     return NextResponse.json({ url: checkoutSession.url });

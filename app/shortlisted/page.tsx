@@ -11,6 +11,7 @@ export default function ShortlistedPage() {
   const router = useRouter();
   const [statement, setStatement] = useState("");
   const [email, setEmail] = useState("");
+  const [optIn, setOptIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -30,7 +31,7 @@ export default function ShortlistedPage() {
       const res = await fetch("/shortlisted/api/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ statement, email }),
+        body: JSON.stringify({ statement, email, optIn }),
       });
       let data: { sessionId?: string; error?: string };
       try {
@@ -61,7 +62,7 @@ export default function ShortlistedPage() {
       : "text-gray-400";
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <header className="border-b border-gray-100 px-6 py-5">
         <div className="max-w-3xl mx-auto flex items-baseline gap-3">
@@ -79,7 +80,7 @@ export default function ShortlistedPage() {
       </header>
 
       {/* Hero */}
-      <div className="max-w-3xl mx-auto px-6 py-16">
+      <div className="flex-1 max-w-3xl mx-auto w-full px-6 py-16">
         <div className="mb-12 text-center">
           <h1
             className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4"
@@ -118,6 +119,23 @@ export default function ShortlistedPage() {
             </p>
           </div>
 
+          {/* Email opt-in */}
+          <div className="flex items-start gap-3">
+            <input
+              id="sl-optin"
+              type="checkbox"
+              checked={optIn}
+              onChange={(e) => setOptIn(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-gray-300 accent-[#C24E2A] cursor-pointer"
+            />
+            <label
+              htmlFor="sl-optin"
+              className="text-sm text-gray-500 cursor-pointer leading-snug"
+            >
+              Send me tips to improve my personal statement (optional)
+            </label>
+          </div>
+
           {/* Textarea */}
           <div>
             <label
@@ -130,7 +148,7 @@ export default function ShortlistedPage() {
               id="sl-statement"
               value={statement}
               onChange={(e) => setStatement(e.target.value)}
-              placeholder="Paste your personal statement here…"
+              placeholder="Paste your personal statement here..."
               rows={16}
               className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#C24E2A] focus:border-transparent transition resize-none font-mono"
             />
@@ -169,7 +187,7 @@ export default function ShortlistedPage() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Spinner />
-                  Analysing your statement…
+                  Analysing your statement...
                 </span>
               ) : (
                 "Analyse my statement"
@@ -212,6 +230,17 @@ export default function ShortlistedPage() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-100 px-6 py-5 text-center text-xs text-gray-400">
+        <p>
+          <a href="/shortlisted/privacy" className="hover:text-gray-600 transition">Privacy Policy</a>
+          {" · "}
+          <a href="/shortlisted/terms" className="hover:text-gray-600 transition">Terms &amp; Conditions</a>
+          {" · "}
+          &copy; 2025 GradeStack
+        </p>
+      </footer>
     </main>
   );
 }
