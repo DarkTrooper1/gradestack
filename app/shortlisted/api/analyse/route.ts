@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { redis, SESSION_TTL } from "@/lib/shortlisted/redis";
 import { runFreeAnalysis, runPaidAnalysis } from "@/lib/shortlisted/claude";
 import { randomUUID } from "crypto";
-import type { FreeAnalysis, PaidAnalysis } from "@/lib/shortlisted/types";
 
 // Both Claude calls run in parallel — total time is ~max(free, paid), not free+paid.
 // Paid analysis with 2048 max_tokens typically completes in 20-35s.
+// Each call retries once internally on a JSON parse failure before throwing.
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
@@ -47,37 +47,17 @@ export async function POST(req: NextRequest) {
       { ex: SESSION_TTL }
     );
 
-    // Run both analyses in parallel — paid takes longer so this saves ~10s
-    const [freeRaw, paidRaw] = await Promise.all([
+    // Run both analyses in parallel — each retries once internally on parse failure
+    const [freeAnalysis, paidAnalysis] = await Promise.all([
       runFreeAnalysis(statement),
       runPaidAnalysis(statement),
     ]);
 
-    // Parse free result
-    let freeAnalysis: FreeAnalysis;
-    try {
-      freeAnalysis = JSON.parse(freeRaw);
-    } catch {
-      const match = freeRaw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("Failed to parse free Claude response as JSON");
-      freeAnalysis = JSON.parse(match[0]);
-    }
-
-    // Parse paid result
-    let paidAnalysis: PaidAnalysis;
-    try {
-      paidAnalysis = JSON.parse(paidRaw);
-    } catch {
-      const match = paidRaw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("Failed to parse paid Claude response as JSON");
-      paidAnalysis = JSON.parse(match[0]);
-    }
-
-    // Store free result and locked paid result in parallel
+    // Store free result and locked paid result in parallel.
+    // Paid data is wrapped in a locked envelope — the results route strips it
+    // only after paid_confirmed is written by the webhook.
     await Promise.all([
       redis.set(`session:${sessionId}:free`, freeAnalysis, { ex: SESSION_TTL }),
-      // Paid data is stored immediately but wrapped in a locked envelope.
-      // The results route unlocks it only after paid_confirmed is set by the webhook.
       redis.set(
         `session:${sessionId}:paid`,
         { locked: true, data: paidAnalysis },
