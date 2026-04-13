@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { redis, SESSION_TTL } from "@/lib/shortlisted/redis";
+import { sendResultsEmail } from "@/lib/shortlisted/email";
+import type { PaidAnalysis } from "@/lib/shortlisted/types";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -46,6 +48,29 @@ export async function POST(req: NextRequest) {
     });
 
     console.log(`Payment confirmed, unlocking analysis for session ${sessionId}`);
+
+    // Fetch meta (for email address) and paid data in parallel
+    const [meta, storedPaid] = await Promise.all([
+      redis.get<{ statement: string; email: string }>(`session:${sessionId}:meta`),
+      redis.get<{ locked: boolean; data: PaidAnalysis }>(`session:${sessionId}:paid`),
+    ]);
+
+    const email = meta?.email;
+    const analysis = storedPaid?.data;
+
+    if (email && analysis) {
+      try {
+        await sendResultsEmail(email, sessionId, analysis);
+        console.log(`Results email sent to ${email} for session ${sessionId}`);
+      } catch (err) {
+        // Don't fail the webhook if email sending fails
+        console.error(`Failed to send results email for session ${sessionId}:`, err);
+      }
+    } else {
+      console.warn(
+        `Skipping email for session ${sessionId}: meta=${!!meta} analysis=${!!analysis}`
+      );
+    }
   }
 
   return NextResponse.json({ received: true });
