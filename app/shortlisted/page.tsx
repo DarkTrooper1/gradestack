@@ -32,8 +32,13 @@ export default function ShortlistedPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ statement, email }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Analysis failed");
+      let data: { sessionId?: string; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Server returned an unexpected response. Please try again.");
+      }
+      if (!res.ok) throw new Error(data.error ?? "Analysis failed. Please try again.");
       router.push(`/shortlisted/results?id=${data.sessionId}`);
     } catch (err) {
       setError(

@@ -68,9 +68,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ sessionId });
   } catch (err) {
     console.error("/shortlisted/api/analyse error:", err);
-    return NextResponse.json(
-      { error: "Analysis failed. Please try again." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Analysis failed. Please try again.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
