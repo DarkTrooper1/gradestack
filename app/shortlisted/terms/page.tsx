@@ -132,7 +132,7 @@ export default function ShortlistedTermsPage() {
           {" · "}
           <a href="/shortlisted/terms" className="hover:text-gray-600 transition">Terms &amp; Conditions</a>
           {" · "}
-          &copy; 2025 GradeStack
+          &copy; 2026 Shortlisted
         </p>
       </footer>
     </main>
