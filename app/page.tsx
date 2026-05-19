@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import ShortlistedBanner from "@/components/shortlisted-banner";
 
 // ── Grade options for scenario planner ───────────────────────
 const GRADE_OPTIONS: Record<string, string[]> = {
@@ -131,7 +132,6 @@ export default function Home() {
   const [scenarioCalculating, setScenarioCalculating] = useState(false);
   const [scenarioQuals, setScenarioQuals] = useState<ResolvedQualification[] | null>(null);
   const [matchResults, setMatchResults] = useState<null | { name: string; city: string; course: string; min_points: number; typical_points: number; url: string; label: 'Likely' | 'Target' | 'Aspirational' }[]>(null);
-  const [matchLoading, setMatchLoading] = useState(false);
   const [resolvingIndex, setResolvingIndex] = useState<number | null>(null);
   const cards = useMemo(() => result?.qualifications ?? [], [result]);
 
@@ -193,17 +193,6 @@ export default function Home() {
     }
   }
 
-  async function handleUnlockMatch() {
-    setMatchLoading(true);
-    const res = await fetch('/api/create-checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ total_points: result?.total_points }),
-    });
-    const { url } = await res.json();
-    window.location.href = url;
-  }
-
   async function handleEmailSubmit() {
     if (!emailInput.includes("@")) return;
     setEmailSubmitting(true);
@@ -251,7 +240,7 @@ export default function Home() {
     }
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setIsSubmitting(true);
@@ -342,59 +331,70 @@ export default function Home() {
     <>
       <style>{`
         @keyframes fade-up {
-          from { opacity: 0; transform: translateY(14px); }
+          from { opacity: 0; transform: translateY(18px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-up {
-          animation: fade-up 0.35s ease both;
+        .animate-fade-up { animation: fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.5; }
+          50%       { opacity: 1; }
         }
+        .glow-dot { animation: pulse-glow 2.5s ease-in-out infinite; }
+        * { box-sizing: border-box; }
       `}</style>
 
       {/* ── Navbar ── */}
-      <nav style={{ borderBottom: "1px solid #e8e6e0" }} className="bg-[#f5f3ee] px-4 py-4">
-        <div className="mx-auto flex max-w-[680px] items-center gap-2.5">
-          <div
-            style={{ background: "#002FA7", borderRadius: "7px", width: 28, height: 28, flexShrink: 0 }}
-            className="flex items-center justify-center"
-          >
-            <svg viewBox="0 0 64 64" width="18" height="18" fill="none">
-              <path d="M12 50 L32 14 L52 50" stroke="white" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+      <nav style={{ borderBottom: "1px solid #1d2640", background: "rgba(7,11,20,0.85)", backdropFilter: "blur(14px)", position: "sticky", top: 0, zIndex: 40, padding: "0 16px" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 30, height: 30, background: "linear-gradient(135deg, #4f72ff, #00d4ff)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 12px rgba(79,114,255,0.4)" }}>
+              <svg viewBox="0 0 64 64" width="17" height="17" fill="none">
+                <path d="M12 50 L32 14 L52 50" stroke="white" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span style={{ color: "#f0f4ff", fontWeight: 700, fontSize: 16, letterSpacing: "-0.02em" }}>Gradestack</span>
           </div>
-          <span style={{ color: "#1a1a2e", fontWeight: 700, fontSize: 16, letterSpacing: "-0.01em", fontFamily: "'Churchward Roundsquare', sans-serif" }}>
-            Gradestack
-          </span>
+          <a
+            href="/shortlisted"
+            style={{ fontSize: 13, color: "#8a9bc4", textDecoration: "none", fontWeight: 500, padding: "6px 14px", borderRadius: 8, border: "1px solid #1d2640", transition: "all 0.15s" }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = "#f0f4ff"; el.style.borderColor = "#253060"; el.style.background = "#0d1226"; }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = "#8a9bc4"; el.style.borderColor = "#1d2640"; el.style.background = "transparent"; }}
+          >
+            Personal Statement
+          </a>
         </div>
       </nav>
 
-      <main style={{ background: "#f5f3ee", minHeight: "100vh" }} className="px-4 pb-24">
+      <main style={{ background: "#070b14", minHeight: "100vh", padding: "0 16px 80px", position: "relative" }}>
+
+        {/* ambient glow */}
+        <div style={{ position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", width: 900, height: 600, background: "radial-gradient(ellipse at 50% 0%, rgba(79,114,255,0.09) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
         {/* ── Hero ── */}
-        <section className="mx-auto flex max-w-[680px] flex-col items-center pt-16 pb-12 text-center">
-          <div
-            style={{ background: "#e5eaf8", color: "#002FA7", border: "1px solid #7d9bd4", borderRadius: 999, padding: "5px 14px", fontSize: 12, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 20 }}
-          >
-            UCAS Tariff Calculator
+        <section style={{ maxWidth: 680, margin: "0 auto", padding: "72px 0 52px", textAlign: "center", position: "relative", zIndex: 1 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(79,114,255,0.08)", border: "1px solid rgba(79,114,255,0.22)", borderRadius: 999, padding: "5px 14px", marginBottom: 26 }}>
+            <span className="glow-dot" style={{ width: 6, height: 6, background: "#4f72ff", borderRadius: "50%", display: "inline-block" }} />
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7ea4ff" }}>UCAS Tariff Calculator</span>
           </div>
-          <h1
-            style={{ fontSize: "clamp(38px, 6vw, 56px)", fontWeight: 800, color: "#1a1a2e", letterSpacing: "-0.03em", lineHeight: 1.1 }}
-          >
+          <h1 style={{ fontSize: "clamp(36px, 7vw, 62px)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.05, color: "#f0f4ff", margin: "0 0 18px" }}>
             Know your{" "}
-            <span style={{ color: "#002FA7" }}>points.</span>
+            <span style={{ background: "linear-gradient(120deg, #4f72ff 0%, #00d4ff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              points.
+            </span>
             <br />Own your future.
           </h1>
-          <p style={{ fontSize: 17, color: "#6b6b80", marginTop: 16, lineHeight: 1.6 }}>
-            Instantly calculate your UCAS tariff points and see where you stand.
+          <p style={{ fontSize: 17, color: "#8a9bc4", lineHeight: 1.65, maxWidth: 420, margin: "0 auto" }}>
+            Instantly calculate your UCAS tariff and see exactly where you stand.
           </p>
         </section>
 
         {/* ── Input card ── */}
-        <section className="mx-auto max-w-[680px]">
+        <section style={{ maxWidth: 680, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <form
             onSubmit={handleSubmit}
-            style={{ background: "#ffffff", border: "1px solid #e8e6e0", borderRadius: 20, padding: "28px" }}
+            style={{ background: "#0d1226", border: "1px solid #1d2640", borderRadius: 20, padding: 28 }}
           >
-            <label style={{ display: "block", fontSize: 14, fontWeight: 600, color: "#1a1a2e", marginBottom: 10 }}>
+            <label style={{ display: "block", fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#4a5680", marginBottom: 10 }}>
               Your qualifications
             </label>
             <textarea
@@ -403,65 +403,61 @@ export default function Home() {
               placeholder="Type your qualifications in plain English — e.g. A* Maths, A Physics, B Chemistry, EPQ grade A"
               style={{
                 width: "100%",
-                minHeight: 180,
-                background: "#f5f3ee",
-                border: "1.5px solid #e8e6e0",
+                minHeight: 160,
+                background: "#070b14",
+                border: "1.5px solid #1d2640",
                 borderRadius: 12,
                 padding: "14px 16px",
                 fontSize: 14,
-                color: "#1a1a2e",
-                lineHeight: 1.6,
+                color: "#f0f4ff",
+                lineHeight: 1.65,
                 resize: "none",
                 outline: "none",
                 boxSizing: "border-box",
-                transition: "border-color 0.15s",
+                transition: "border-color 0.2s",
                 fontFamily: "inherit",
               }}
-              onFocus={e => (e.target.style.borderColor = "#002FA7")}
-              onBlur={e => (e.target.style.borderColor = "#e8e6e0")}
+              onFocus={e => (e.target.style.borderColor = "#4f72ff")}
+              onBlur={e => (e.target.style.borderColor = "#1d2640")}
             />
-
             <button
               type="submit"
               disabled={isSubmitting || !input.trim()}
               style={{
                 marginTop: 12,
                 width: "100%",
-                background: "#002FA7",
-                color: "#ffffff",
-                border: "none",
+                background: isSubmitting || !input.trim() ? "#131929" : "linear-gradient(135deg, #4f72ff 0%, #3b5ce8 100%)",
+                color: isSubmitting || !input.trim() ? "#4a5680" : "#ffffff",
+                border: `1px solid ${isSubmitting || !input.trim() ? "#1d2640" : "transparent"}`,
                 borderRadius: 12,
                 padding: "14px",
                 fontSize: 15,
                 fontWeight: 700,
-                cursor: "pointer",
+                cursor: isSubmitting || !input.trim() ? "not-allowed" : "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 8,
-                transition: "background 0.15s, transform 0.1s",
-                opacity: isSubmitting || !input.trim() ? 0.45 : 1,
+                transition: "all 0.2s",
+                boxShadow: isSubmitting || !input.trim() ? "none" : "0 0 28px rgba(79,114,255,0.35)",
               }}
-              onMouseEnter={e => { if (!isSubmitting && input.trim()) (e.currentTarget as HTMLButtonElement).style.background = "#001f85"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#002FA7"; }}
             >
               {isSubmitting ? (
                 <>
                   <svg className="animate-spin" style={{ width: 18, height: 18 }} viewBox="0 0 24 24" fill="none">
-                    <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <circle style={{ opacity: 0.15 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                   </svg>
                   Calculating…
                 </>
               ) : (
-                "Calculate"
+                "Calculate my points →"
               )}
             </button>
           </form>
 
-          {/* ── Error ── */}
           {error && (
-            <div style={{ marginTop: 12, background: "#fff0f0", border: "1px solid #f09595", borderRadius: 12, padding: "12px 16px", fontSize: 14, color: "#a32d2d" }}>
+            <div style={{ marginTop: 10, background: "rgba(248,113,113,0.07)", border: "1px solid rgba(248,113,113,0.25)", borderRadius: 12, padding: "12px 16px", fontSize: 14, color: "#f87171" }}>
               {error}
             </div>
           )}
@@ -469,29 +465,31 @@ export default function Home() {
 
         {/* ── Results ── */}
         {result && (
-          <section className="animate-fade-up mx-auto mt-8 max-w-[680px]" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <section className="animate-fade-up" style={{ maxWidth: 680, margin: "28px auto 0", display: "flex", flexDirection: "column", gap: 10, position: "relative", zIndex: 1 }}>
 
-            {/* Total block — full indigo card */}
-            <div style={{ background: "#002FA7", borderRadius: 20, padding: "36px 28px", textAlign: "center" }}>
-              <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)", marginBottom: 8 }}>
+            {/* Total score card */}
+            <div style={{ background: "linear-gradient(160deg, #0d1226 0%, #08102a 100%)", border: "1px solid #1d2640", borderRadius: 24, padding: "44px 28px 36px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -60%)", width: 400, height: 400, background: "radial-gradient(circle, rgba(79,114,255,0.1) 0%, transparent 65%)", pointerEvents: "none" }} />
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#3a4870", marginBottom: 8, position: "relative" }}>
                 Total UCAS Points
               </p>
-              <p style={{ fontSize: 88, fontWeight: 800, color: "#ffffff", lineHeight: 1, tabularNums: true } as React.CSSProperties}>
+              <p style={{ fontSize: "clamp(72px, 14vw, 108px)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.05em", background: "linear-gradient(140deg, #ffffff 30%, #7ea4ff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", position: "relative" } as React.CSSProperties}>
                 {result.total_points}
               </p>
 
               {scenarioMode && scenarioTotal !== null && (
-                <div style={{ marginTop: 16, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                  <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Scenario Total</p>
+                <div style={{ marginTop: 20, display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 6, background: "rgba(79,114,255,0.07)", border: "1px solid rgba(79,114,255,0.18)", borderRadius: 16, padding: "16px 24px" }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#3a4870" }}>Scenario Total</p>
                   <p style={{
-                    fontSize: 44,
-                    fontWeight: 800,
-                    color: scenarioTotal > result.total_points ? "#86efac" : scenarioTotal < result.total_points ? "#fca5a5" : "#ffffff",
+                    fontSize: 48,
+                    fontWeight: 900,
+                    letterSpacing: "-0.04em",
                     lineHeight: 1,
+                    color: scenarioTotal > result.total_points ? "#22d3a0" : scenarioTotal < result.total_points ? "#f87171" : "#f0f4ff",
                   }}>
                     {scenarioCalculating ? "…" : scenarioTotal}
                     {!scenarioCalculating && scenarioTotal !== result.total_points && (
-                      <span style={{ fontSize: 22, marginLeft: 8 }}>
+                      <span style={{ fontSize: 22, marginLeft: 8, fontWeight: 700 }}>
                         {scenarioTotal > result.total_points ? `+${scenarioTotal - result.total_points}` : `${scenarioTotal - result.total_points}`}
                       </span>
                     )}
@@ -500,32 +498,32 @@ export default function Home() {
               )}
 
               {result.context?.tier_label && (
-                <div style={{ marginTop: 18, display: "flex", justifyContent: "center" }}>
-                  <span style={{ background: "rgba(255,255,255,0.15)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 999, padding: "5px 14px", fontSize: 13, fontWeight: 500 }}>
+                <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+                  <span style={{ background: "rgba(79,114,255,0.1)", color: "#8ab4ff", border: "1px solid rgba(79,114,255,0.22)", borderRadius: 999, padding: "5px 18px", fontSize: 13, fontWeight: 600 }}>
                     {result.context.tier_label}
                   </span>
                 </div>
               )}
 
               {result.context?.tier_description && (
-                <p style={{ marginTop: 14, fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.6, maxWidth: 460, margin: "14px auto 0" }}>
+                <p style={{ marginTop: 12, fontSize: 14, color: "#8a9bc4", lineHeight: 1.65, maxWidth: 460, margin: "12px auto 0", position: "relative" }}>
                   {result.context.tier_description}
                 </p>
               )}
 
               {result.context?.quick_wins && result.context.quick_wins.length > 0 && (
-                <div style={{ marginTop: 24, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 20 }}>
-                  <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 14 }}>Quick Wins</p>
+                <div style={{ marginTop: 30, borderTop: "1px solid #1a2240", paddingTop: 26, position: "relative" }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#3a4870", marginBottom: 16 }}>Quick Wins</p>
                   {emailSubmitted ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {result.context.quick_wins.map((win, i) => (
-                        <div key={i} style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 14, padding: "14px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, textAlign: "left" }}>
+                        <div key={i} style={{ background: "rgba(34,211,160,0.05)", border: "1px solid rgba(34,211,160,0.15)", borderRadius: 14, padding: "14px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, textAlign: "left" }}>
                           <div>
-                            <p style={{ fontSize: 13, fontWeight: 600, color: "#ffffff", marginBottom: 3 }}>{win.title}</p>
-                            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.5 }}>{win.description}</p>
+                            <p style={{ fontSize: 13, fontWeight: 600, color: "#f0f4ff", marginBottom: 3 }}>{win.title}</p>
+                            <p style={{ fontSize: 13, color: "#8a9bc4", lineHeight: 1.5 }}>{win.description}</p>
                           </div>
                           {win.points_gain > 0 && (
-                            <span style={{ flexShrink: 0, background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, color: "#ffffff" }}>
+                            <span style={{ flexShrink: 0, background: "rgba(34,211,160,0.1)", border: "1px solid rgba(34,211,160,0.22)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, color: "#22d3a0" }}>
                               +{win.points_gain} pts
                             </span>
                           )}
@@ -534,15 +532,15 @@ export default function Home() {
                     </div>
                   ) : (
                     <div style={{ position: "relative" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                         {result.context.quick_wins.map((win, i) => (
-                          <div key={i} style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 14, padding: "14px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, textAlign: "left", filter: "blur(5px)", userSelect: "none", pointerEvents: "none" }}>
+                          <div key={i} style={{ background: "rgba(34,211,160,0.05)", border: "1px solid rgba(34,211,160,0.15)", borderRadius: 14, padding: "14px 16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, textAlign: "left", filter: "blur(5px)", userSelect: "none", pointerEvents: "none" }}>
                             <div>
-                              <p style={{ fontSize: 13, fontWeight: 600, color: "#ffffff", marginBottom: 3 }}>{win.title}</p>
-                              <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>{win.description}</p>
+                              <p style={{ fontSize: 13, fontWeight: 600, color: "#f0f4ff", marginBottom: 3 }}>{win.title}</p>
+                              <p style={{ fontSize: 13, color: "#8a9bc4" }}>{win.description}</p>
                             </div>
                             {win.points_gain > 0 && (
-                              <span style={{ flexShrink: 0, background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, color: "#ffffff" }}>
+                              <span style={{ flexShrink: 0, background: "rgba(34,211,160,0.1)", border: "1px solid rgba(34,211,160,0.22)", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, color: "#22d3a0" }}>
                                 +{win.points_gain} pts
                               </span>
                             )}
@@ -550,10 +548,10 @@ export default function Home() {
                         ))}
                       </div>
                       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: "#ffffff" }}>Unlock your personalised quick wins</p>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: "#f0f4ff" }}>Unlock your personalised quick wins</p>
                         <button
                           onClick={() => setShowEmailModal(true)}
-                          style={{ background: "#ffffff", color: "#002FA7", border: "none", borderRadius: 12, padding: "9px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                          style={{ background: "linear-gradient(135deg, #4f72ff 0%, #3b5ce8 100%)", color: "#ffffff", border: "none", borderRadius: 10, padding: "9px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 0 18px rgba(79,114,255,0.35)" }}
                         >
                           Get full results by email
                         </button>
@@ -564,9 +562,9 @@ export default function Home() {
               )}
 
               {result.warnings && result.warnings.length > 0 && (
-                <ul style={{ marginTop: 20, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+                <ul style={{ marginTop: 20, borderTop: "1px solid #1a2240", paddingTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
                   {result.warnings.map((w, i) => (
-                    <li key={i} style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", listStyle: "none" }}>
+                    <li key={i} style={{ fontSize: 12, color: "#3a4870", listStyle: "none" }}>
                       {w}
                     </li>
                   ))}
@@ -575,27 +573,29 @@ export default function Home() {
             </div>
 
             {/* Qualification cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {cards.map((q, i) => {
                 const excluded = q.excluded;
                 const found = q.lookup_status === "found" && !excluded;
+                const leftAccent = excluded ? "#1d2640" : found ? "#4f72ff" : q.lookup_status === "ambiguous" ? "#fbbf24" : "#1d2640";
                 return (
                   <div
                     key={`${q.raw}-${i}`}
                     style={{
-                      background: "#ffffff",
-                      border: "1px solid #e8e6e0",
-                      borderRadius: 14,
+                      background: "#0d1226",
+                      border: "1px solid #1d2640",
+                      borderLeft: `3px solid ${leftAccent}`,
+                      borderRadius: 12,
                       padding: "14px 18px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
                       gap: 16,
-                      opacity: excluded ? 0.4 : 1,
+                      opacity: excluded ? 0.35 : 1,
                     }}
                   >
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#9b99b0", marginBottom: 3 }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#3a4870", marginBottom: 3 }}>
                         {formatType(q.type)}
                       </p>
                       {scenarioMode && found ? (
@@ -604,30 +604,30 @@ export default function Home() {
                             value={scenarioGrades[i] ?? q.grade}
                             onChange={(e) => recalculateScenario(i, e.target.value)}
                             style={{
-                              background: "#f5f3ee",
-                              border: "1.5px solid #d4d0f0",
+                              background: "#070b14",
+                              border: "1.5px solid #1d2640",
                               borderRadius: 8,
                               padding: "5px 10px",
                               fontSize: 13,
                               fontWeight: 500,
-                              color: "#1a1a2e",
+                              color: "#f0f4ff",
                               outline: "none",
                               cursor: "pointer",
                               fontFamily: "inherit",
                             }}
-                            onFocus={e => (e.target.style.borderColor = "#002FA7")}
-                            onBlur={e => (e.target.style.borderColor = "#d4d0f0")}
+                            onFocus={e => (e.target.style.borderColor = "#4f72ff")}
+                            onBlur={e => (e.target.style.borderColor = "#1d2640")}
                           >
                             {(GRADE_OPTIONS[q.type] ?? [q.grade]).map((g) => (
                               <option key={g} value={g}>{g}</option>
                             ))}
                           </select>
                           {scenarioGrades[i] && scenarioGrades[i] !== q.grade && (
-                            <span style={{ fontSize: 12, color: "#9b99b0", textDecoration: "line-through" }}>{q.grade}</span>
+                            <span style={{ fontSize: 12, color: "#3a4870", textDecoration: "line-through" }}>{q.grade}</span>
                           )}
                         </div>
                       ) : (
-                        <p style={{ fontSize: 14, fontWeight: 500, color: found ? "#1a1a2e" : "#9b99b0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <p style={{ fontSize: 14, fontWeight: 500, color: found ? "#f0f4ff" : "#3a4870", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {q.subject
                             ? `${q.subject}${q.grade ? ` — ${q.grade}` : ""}`
                             : q.display_name && q.grade
@@ -639,7 +639,7 @@ export default function Home() {
 
                     <div style={{ flexShrink: 0 }}>
                       {excluded ? (
-                        <span style={{ background: "#f5f3ee", border: "1px solid #e8e6e0", borderRadius: 8, padding: "4px 10px", fontSize: 13, fontWeight: 700, color: "#9b99b0", textDecoration: "line-through" }}>
+                        <span style={{ background: "#131929", border: "1px solid #1d2640", borderRadius: 8, padding: "4px 10px", fontSize: 13, fontWeight: 700, color: "#3a4870", textDecoration: "line-through" }}>
                           {q.points} pts
                         </span>
                       ) : found ? (
@@ -650,13 +650,13 @@ export default function Home() {
                           const decreased = pointsChanged && scenarioQuals![i].points < q.points;
                           return (
                             <span style={{
-                              background: increased ? "#eaf3de" : decreased ? "#fcebeb" : "#e5eaf8",
-                              border: `1px solid ${increased ? "#c0dd97" : decreased ? "#f09595" : "#7d9bd4"}`,
+                              background: increased ? "rgba(34,211,160,0.09)" : decreased ? "rgba(248,113,113,0.09)" : "rgba(79,114,255,0.09)",
+                              border: `1px solid ${increased ? "rgba(34,211,160,0.28)" : decreased ? "rgba(248,113,113,0.28)" : "rgba(79,114,255,0.28)"}`,
                               borderRadius: 8,
                               padding: "4px 10px",
                               fontSize: 13,
                               fontWeight: 700,
-                              color: increased ? "#3b6d11" : decreased ? "#a32d2d" : "#002FA7",
+                              color: increased ? "#22d3a0" : decreased ? "#f87171" : "#8ab4ff",
                               transition: "all 0.15s",
                             }}>
                               {displayPoints} pts
@@ -669,19 +669,17 @@ export default function Home() {
                           disabled={resolvingIndex === i}
                           onChange={(e) => handleResolveAmbiguous(i, e.target.value)}
                           style={{
-                            background: "#faeeda",
-                            border: "1.5px solid #fac775",
+                            background: "rgba(251,191,36,0.07)",
+                            border: "1.5px solid rgba(251,191,36,0.28)",
                             borderRadius: 8,
                             padding: "4px 10px",
                             fontSize: 12,
                             fontWeight: 600,
-                            color: "#854f0b",
+                            color: "#fbbf24",
                             cursor: "pointer",
                             outline: "none",
                             fontFamily: "inherit",
                           }}
-                          onFocus={e => (e.target.style.borderColor = "#002FA7")}
-                          onBlur={e => (e.target.style.borderColor = "#fac775")}
                         >
                           <option value="" disabled>Grade?</option>
                           {(GRADE_OPTIONS[q.type] ?? ["A*", "A", "B", "C", "D", "E"]).map((g) => (
@@ -689,7 +687,7 @@ export default function Home() {
                           ))}
                         </select>
                       ) : (
-                        <span style={{ background: "#f5f3ee", border: "1px solid #e8e6e0", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 500, color: "#9b99b0" }}>
+                        <span style={{ background: "#131929", border: "1px solid #1d2640", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 500, color: "#3a4870" }}>
                           Not recognised
                         </span>
                       )}
@@ -704,40 +702,44 @@ export default function Home() {
 
         {/* University match — coming soon */}
         {result && !matchResults && (
-          <div className="animate-fade-up mx-auto mt-3 max-w-[680px]">
-            <div style={{background:'#ffffff', border:'1px solid #e8e6e0', borderRadius:20, padding:'40px 36px 32px', textAlign:'center', marginTop:12}}>
-              <div style={{display:'inline-block', background:'#f0f0f5', border:'1px solid #d0cfe8', borderRadius:999, padding:'4px 14px', fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase', color:'#7b7a9a', marginBottom:20}}>Coming Soon</div>
-              <p style={{fontSize:26, fontWeight:800, color:'#1a1a2e', letterSpacing:'-0.02em', lineHeight:1.2, marginBottom:12}}>Find out where {result.total_points} points takes you</p>
-              <p style={{fontSize:15, color:'#6b6b80', lineHeight:1.65, maxWidth:380, margin:'0 auto 0'}}>We&apos;re building a university matching feature that will show you a personalised list of courses matched to your points — with likelihood ratings and direct links to apply.</p>
+          <div className="animate-fade-up" style={{ maxWidth: 680, margin: "10px auto 0", position: "relative", zIndex: 1 }}>
+            <div style={{ background: "#0d1226", border: "1px solid #1d2640", borderRadius: 20, padding: "40px 36px 32px", textAlign: "center", marginTop: 0 }}>
+              <div style={{ display: "inline-block", background: "rgba(79,114,255,0.07)", border: "1px solid rgba(79,114,255,0.18)", borderRadius: 999, padding: "4px 14px", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#4f72ff", marginBottom: 20 }}>Coming Soon</div>
+              <p style={{ fontSize: 24, fontWeight: 800, color: "#f0f4ff", letterSpacing: "-0.03em", lineHeight: 1.2, marginBottom: 12 }}>Find out where {result.total_points} points takes you</p>
+              <p style={{ fontSize: 15, color: "#8a9bc4", lineHeight: 1.65, maxWidth: 380, margin: "0 auto" }}>We&apos;re building a university matching feature that will show you a personalised list of courses matched to your points — with likelihood ratings and direct links to apply.</p>
             </div>
           </div>
         )}
 
         {result && matchResults && matchResults.length > 0 && (
-          <section className="animate-fade-up mx-auto mt-3 max-w-[680px]">
-            <div style={{background:'#ffffff', border:'1px solid #e8e6e0', borderRadius:20, padding:'20px 24px', marginBottom:12}}>
-              <p style={{fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase', color:'#9b99b0', marginBottom:4}}>University Match</p>
-              <p style={{fontSize:18, fontWeight:800, color:'#1a1a2e'}}>{matchResults.length} courses matched to your points</p>
+          <section className="animate-fade-up" style={{ maxWidth: 680, margin: "10px auto 0", position: "relative", zIndex: 1 }}>
+            <div style={{ background: "#0d1226", border: "1px solid #1d2640", borderRadius: 20, padding: "20px 24px", marginBottom: 10 }}>
+              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#3a4870", marginBottom: 4 }}>University Match</p>
+              <p style={{ fontSize: 18, fontWeight: 800, color: "#f0f4ff" }}>{matchResults.length} courses matched to your points</p>
             </div>
             {(['Likely', 'Target', 'Aspirational'] as const).map((label) => {
               const group = matchResults.filter(r => r.label === label);
               if (!group.length) return null;
+              const labelColor = label === 'Likely' ? '#22d3a0' : label === 'Target' ? '#8ab4ff' : '#fbbf24';
+              const labelBg = label === 'Likely' ? 'rgba(34,211,160,0.07)' : label === 'Target' ? 'rgba(79,114,255,0.07)' : 'rgba(251,191,36,0.07)';
+              const labelBorder = label === 'Likely' ? 'rgba(34,211,160,0.22)' : label === 'Target' ? 'rgba(79,114,255,0.22)' : 'rgba(251,191,36,0.22)';
               return (
-                <div key={label} style={{marginBottom:16}}>
-                  <p style={{fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase', color:'#9b99b0', marginBottom:8, paddingLeft:4}}>{label}</p>
+                <div key={label} style={{ marginBottom: 14 }}>
+                  <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#3a4870", marginBottom: 8, paddingLeft: 4 }}>{label}</p>
                   {group.map((r, i) => (
-                    <a key={i} href={r.url} target="_blank" rel="noreferrer" style={{display:'block', background:'#ffffff', border:'1px solid #e8e6e0', borderRadius:14, padding:'14px 18px', marginBottom:8, textDecoration:'none'}}>
-                      <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start'}}>
+                    <a key={i} href={r.url} target="_blank" rel="noreferrer"
+                      style={{ display: "block", background: "#0d1226", border: "1px solid #1d2640", borderRadius: 12, padding: "14px 18px", marginBottom: 6, textDecoration: "none", transition: "border-color 0.15s" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#253060"; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#1d2640"; }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                         <div>
-                          <p style={{fontSize:10, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase', color:'#9b99b0', marginBottom:3}}>{r.name} · {r.city}</p>
-                          <p style={{fontSize:14, fontWeight:500, color:'#1a1a2e'}}>{r.course}</p>
+                          <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#3a4870", marginBottom: 3 }}>{r.name} · {r.city}</p>
+                          <p style={{ fontSize: 14, fontWeight: 500, color: "#f0f4ff" }}>{r.course}</p>
                         </div>
-                        <span style={{
-                          fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:8, whiteSpace:'nowrap',
-                          background: r.label === 'Likely' ? '#eaf3de' : r.label === 'Target' ? '#e5eaf8' : '#faeeda',
-                          color: r.label === 'Likely' ? '#3b6d11' : r.label === 'Target' ? '#002FA7' : '#854f0b',
-                          border: r.label === 'Likely' ? '1px solid #c0dd97' : r.label === 'Target' ? '1px solid #7d9bd4' : '1px solid #fac775',
-                        }}>{r.label} · {r.typical_points} pts</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 8, whiteSpace: "nowrap", background: labelBg, color: labelColor, border: `1px solid ${labelBorder}` }}>
+                          {r.label} · {r.typical_points} pts
+                        </span>
                       </div>
                     </a>
                   ))}
@@ -747,9 +749,15 @@ export default function Home() {
           </section>
         )}
 
+        {result && matchResults && matchResults.length > 0 && (
+          <div className="animate-fade-up" style={{ maxWidth: 680, margin: "10px auto 0", position: "relative", zIndex: 1 }}>
+            <ShortlistedBanner />
+          </div>
+        )}
+
         {/* Scenario toggle */}
         {result && (
-          <div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+          <div style={{ maxWidth: 680, margin: "16px auto 0", display: "flex", justifyContent: "center", position: "relative", zIndex: 1 }}>
             <button
               onClick={() => {
                 setScenarioMode(!scenarioMode);
@@ -758,18 +766,18 @@ export default function Home() {
                 setScenarioQuals(null);
               }}
               style={{
-                background: scenarioMode ? "#e5eaf8" : "#ffffff",
-                border: `1px solid ${scenarioMode ? "#7d9bd4" : "#e8e6e0"}`,
-                borderRadius: 12,
-                padding: "9px 18px",
+                background: scenarioMode ? "rgba(79,114,255,0.1)" : "transparent",
+                border: `1px solid ${scenarioMode ? "rgba(79,114,255,0.32)" : "#1d2640"}`,
+                borderRadius: 10,
+                padding: "9px 20px",
                 fontSize: 13,
                 fontWeight: 600,
-                color: scenarioMode ? "#002FA7" : "#6b6b80",
+                color: scenarioMode ? "#8ab4ff" : "#8a9bc4",
                 cursor: "pointer",
                 transition: "all 0.15s",
               }}
-              onMouseEnter={e => { if (!scenarioMode) { (e.currentTarget as HTMLButtonElement).style.borderColor = "#002FA7"; (e.currentTarget as HTMLButtonElement).style.color = "#002FA7"; } }}
-              onMouseLeave={e => { if (!scenarioMode) { (e.currentTarget as HTMLButtonElement).style.borderColor = "#e8e6e0"; (e.currentTarget as HTMLButtonElement).style.color = "#6b6b80"; } }}
+              onMouseEnter={e => { if (!scenarioMode) { (e.currentTarget as HTMLButtonElement).style.borderColor = "#253060"; (e.currentTarget as HTMLButtonElement).style.color = "#f0f4ff"; } }}
+              onMouseLeave={e => { if (!scenarioMode) { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1d2640"; (e.currentTarget as HTMLButtonElement).style.color = "#8a9bc4"; } }}
             >
               {scenarioMode ? "Exit scenario mode" : "Try a scenario"}
             </button>
@@ -778,34 +786,34 @@ export default function Home() {
       </main>
 
       {/* ── Shortlisted banner ── */}
-      <div style={{ background: "#fdf5f2", borderTop: "1px solid #f0e0d8", borderBottom: "1px solid #f0e0d8", padding: "16px" }}>
+      <div style={{ background: "#0d1226", borderTop: "1px solid #1d2640", borderBottom: "1px solid #1d2640", padding: "14px 16px" }}>
         <a
           href="/shortlisted"
           style={{ display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 680, margin: "0 auto", textDecoration: "none", gap: 12 }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#C24E2A", background: "#fce8e2", borderRadius: 6, padding: "2px 8px" }}>New</span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>Get AI feedback on your personal statement</span>
-            <span style={{ fontSize: 14, color: "#6b6b80", display: "none" }} className="sm:inline">— scored by an expert AI reviewer</span>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#ff7a5c", background: "rgba(255,122,92,0.1)", border: "1px solid rgba(255,122,92,0.22)", borderRadius: 6, padding: "2px 8px" }}>New</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#f0f4ff" }}>Get AI feedback on your personal statement</span>
+            <span style={{ fontSize: 14, color: "#8a9bc4", display: "none" }} className="sm:inline">— scored by an expert AI reviewer</span>
           </div>
-          <span style={{ fontSize: 13, color: "#C24E2A", fontWeight: 600, whiteSpace: "nowrap" }}>Try Shortlisted →</span>
+          <span style={{ fontSize: 13, color: "#ff7a5c", fontWeight: 600, whiteSpace: "nowrap" }}>Try Shortlisted →</span>
         </a>
       </div>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: "1px solid #e8e6e0", background: "#f5f3ee", padding: "20px 16px", textAlign: "center" }}>
+      <footer style={{ borderTop: "1px solid #1d2640", background: "#070b14", padding: "20px 16px", textAlign: "center" }}>
         <div style={{ maxWidth: 680, margin: "0 auto" }}>
-          <p style={{ fontSize: 12, color: "#9b99b0", margin: 0 }}>
+          <p style={{ fontSize: 12, color: "#3a4870", margin: 0 }}>
             &copy; {new Date().getFullYear()} Gradestack &nbsp;&middot;&nbsp;{" "}
-            <a href="/privacy" style={{ color: "#9b99b0", textDecoration: "none" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#1a1a2e"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9b99b0"; }}>
+            <a href="/privacy" style={{ color: "#3a4870", textDecoration: "none", transition: "color 0.15s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#8a9bc4"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#3a4870"; }}>
               Privacy Policy
             </a>
             {" "}&nbsp;&middot;&nbsp;{" "}
-            <a href="/terms" style={{ color: "#9b99b0", textDecoration: "none" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#1a1a2e"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9b99b0"; }}>
+            <a href="/terms" style={{ color: "#3a4870", textDecoration: "none", transition: "color 0.15s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#8a9bc4"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#3a4870"; }}>
               Terms &amp; Conditions
             </a>
           </p>
@@ -814,23 +822,23 @@ export default function Home() {
 
       {/* ── Email modal ── */}
       {showEmailModal && !emailSubmitted && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px", background: "rgba(26,26,46,0.5)", backdropFilter: "blur(4px)" }}>
-          <div className="animate-fade-up" style={{ position: "relative", width: "100%", maxWidth: 440, background: "#ffffff", border: "1px solid #e8e6e0", borderRadius: 20, padding: 32, boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px", background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}>
+          <div className="animate-fade-up" style={{ position: "relative", width: "100%", maxWidth: 440, background: "#0d1226", border: "1px solid #1d2640", borderRadius: 20, padding: 32, boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
             <button
               onClick={() => setShowEmailModal(false)}
-              style={{ position: "absolute", right: 16, top: 16, background: "none", border: "none", fontSize: 16, color: "#9b99b0", cursor: "pointer", lineHeight: 1 }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#1a1a2e"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#9b99b0"; }}
+              style={{ position: "absolute", right: 16, top: 16, background: "none", border: "none", fontSize: 16, color: "#3a4870", cursor: "pointer", lineHeight: 1, transition: "color 0.15s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#f0f4ff"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#3a4870"; }}
             >
               ✕
             </button>
-            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#9b99b0", marginBottom: 10 }}>
+            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#3a4870", marginBottom: 10 }}>
               Your results are ready
             </p>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a2e", lineHeight: 1.3, marginBottom: 10 }}>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#f0f4ff", lineHeight: 1.2, marginBottom: 10 }}>
               Get your full results emailed to you
             </h2>
-            <p style={{ fontSize: 14, color: "#6b6b80", lineHeight: 1.6 }}>
+            <p style={{ fontSize: 14, color: "#8a9bc4", lineHeight: 1.65 }}>
               We'll send you your {result?.total_points} points, your tier breakdown, and your personalised quick wins — all in one email to save and share.
             </p>
             <input
@@ -842,18 +850,19 @@ export default function Home() {
               style={{
                 marginTop: 18,
                 width: "100%",
-                background: "#f5f3ee",
-                border: "1.5px solid #e8e6e0",
+                background: "#070b14",
+                border: "1.5px solid #1d2640",
                 borderRadius: 12,
                 padding: "12px 14px",
                 fontSize: 14,
-                color: "#1a1a2e",
+                color: "#f0f4ff",
                 outline: "none",
                 boxSizing: "border-box",
                 fontFamily: "inherit",
+                transition: "border-color 0.2s",
               }}
-              onFocus={e => (e.target.style.borderColor = "#002FA7")}
-              onBlur={e => (e.target.style.borderColor = "#e8e6e0")}
+              onFocus={e => (e.target.style.borderColor = "#4f72ff")}
+              onBlur={e => (e.target.style.borderColor = "#1d2640")}
             />
             <button
               onClick={handleEmailSubmit}
@@ -861,26 +870,26 @@ export default function Home() {
               style={{
                 marginTop: 10,
                 width: "100%",
-                background: "#002FA7",
-                color: "#ffffff",
+                background: emailSubmitting || !emailInput.includes("@") ? "#131929" : "linear-gradient(135deg, #4f72ff 0%, #3b5ce8 100%)",
+                color: emailSubmitting || !emailInput.includes("@") ? "#4a5680" : "#ffffff",
                 border: "none",
                 borderRadius: 12,
                 padding: "13px",
                 fontSize: 14,
                 fontWeight: 700,
                 cursor: emailSubmitting || !emailInput.includes("@") ? "not-allowed" : "pointer",
-                opacity: emailSubmitting || !emailInput.includes("@") ? 0.4 : 1,
-                transition: "background 0.15s",
+                transition: "all 0.2s",
                 fontFamily: "inherit",
+                boxShadow: emailSubmitting || !emailInput.includes("@") ? "none" : "0 0 22px rgba(79,114,255,0.32)",
               }}
             >
               {emailSubmitting ? "Sending…" : "Send me my results"}
             </button>
             <button
               onClick={() => setShowEmailModal(false)}
-              style={{ marginTop: 10, width: "100%", background: "none", border: "none", fontSize: 13, color: "#9b99b0", cursor: "pointer", padding: "6px", fontFamily: "inherit", transition: "color 0.15s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#6b6b80"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#9b99b0"; }}
+              style={{ marginTop: 10, width: "100%", background: "none", border: "none", fontSize: 13, color: "#3a4870", cursor: "pointer", padding: "6px", fontFamily: "inherit", transition: "color 0.15s" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#8a9bc4"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#3a4870"; }}
             >
               No thanks
             </button>
@@ -890,19 +899,19 @@ export default function Home() {
 
       {/* ── Success modal ── */}
       {showEmailModal && emailSubmitted && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px", background: "rgba(26,26,46,0.5)", backdropFilter: "blur(4px)" }}>
-          <div className="animate-fade-up" style={{ position: "relative", width: "100%", maxWidth: 440, background: "#ffffff", border: "1px solid #e8e6e0", borderRadius: 20, padding: 32, boxShadow: "0 20px 60px rgba(0,0,0,0.12)", textAlign: "center" }}>
-            <div style={{ width: 48, height: 48, background: "#e5eaf8", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: 22, color: "#002FA7" }}>
+        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px", background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}>
+          <div className="animate-fade-up" style={{ position: "relative", width: "100%", maxWidth: 440, background: "#0d1226", border: "1px solid #1d2640", borderRadius: 20, padding: 32, boxShadow: "0 24px 80px rgba(0,0,0,0.6)", textAlign: "center" }}>
+            <div style={{ width: 52, height: 52, background: "rgba(34,211,160,0.09)", border: "1px solid rgba(34,211,160,0.22)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px", fontSize: 22, color: "#22d3a0" }}>
               ✓
             </div>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a2e", marginBottom: 10 }}>Check your inbox</h2>
-            <p style={{ fontSize: 14, color: "#6b6b80", lineHeight: 1.6 }}>We've saved your results and will be in touch with personalised university guidance.</p>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#f0f4ff", marginBottom: 10 }}>Check your inbox</h2>
+            <p style={{ fontSize: 14, color: "#8a9bc4", lineHeight: 1.65 }}>We've saved your results and will be in touch with personalised university guidance.</p>
             <button
               onClick={() => setShowEmailModal(false)}
               style={{
                 marginTop: 20,
                 width: "100%",
-                background: "#002FA7",
+                background: "linear-gradient(135deg, #4f72ff 0%, #3b5ce8 100%)",
                 color: "#ffffff",
                 border: "none",
                 borderRadius: 12,
@@ -911,6 +920,7 @@ export default function Home() {
                 fontWeight: 700,
                 cursor: "pointer",
                 fontFamily: "inherit",
+                boxShadow: "0 0 22px rgba(79,114,255,0.32)",
               }}
             >
               Done
